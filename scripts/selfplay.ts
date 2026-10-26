@@ -1,1 +1,3 @@
-console.log('selfplay is not implemented yet. AC-05 adds the AI harness.');
+import { runSelfPlayCli } from '../src/ai/selfplay';
+
+runSelfPlayCli();

@@ -1,0 +1,7 @@
+
+> academy@0.1.0 selfplay
+> tsx scripts/selfplay.ts --games 200 --seed 7
+
+games=200 heuristic_wins=183 random_wins=8 draws=9 unfinished=0
+win_rate=91.5 avg_rounds=11.26 avg_actions=74.66
+p95_decision_ms=5.627 max_game_ms=532.77

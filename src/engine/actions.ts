@@ -24,7 +24,10 @@ export function applyAction(state: GameState, action: Action): ActionResult {
     return { ok: false, error };
   }
 
-  const next = structuredClone(state);
+  // The catalog is immutable card data, so keep one shared copy instead of
+  // deep cloning 45 definitions for every action.
+  const next = structuredClone({ ...state, catalog: {} }) as GameState;
+  next.catalog = state.catalog;
   const before = next.events.length;
   let events: GameEvent[] = [];
 

@@ -152,22 +152,24 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build the AI opponent (AC-05)
 
+**State.** Branch `ac-05-ai` at `27b0e95`. Evidence at `docs/evidence/ac-05-selfplay.txt`. 89 tests. 200 games, 91.5 percent win rate, 11.26 average rounds, p95 5.627 ms, longest game 532.77 ms.
+
 **Entry gate.** AC-04 is merged. All three champion games reach a terminal state in the harness.
 
 **Deliverables.**
 
-- [ ] Create `src/ai/score.ts` with the position scoring function.
-- [ ] Create `src/ai/choose.ts` with `chooseAction(state, playerId)`. It uses `getLegalActions`, scores each result, and breaks ties with the seeded RNG.
-- [ ] Create `src/ai/selfplay.ts` as the harness behind `npm run selfplay`.
-- [ ] Create `src/ai/random.ts` as the baseline opponent for the win rate test.
+- [x] Create `src/ai/score.ts` with the position scoring function.
+- [x] Create `src/ai/choose.ts` with `chooseAction(state, playerId)`. It uses `getLegalActions`, scores each result, and breaks ties with the seeded RNG.
+- [x] Create `src/ai/selfplay.ts` as the harness behind `npm run selfplay`.
+- [x] Create `src/ai/random.ts` as the baseline opponent for the win rate test.
 
 **Verify, unit and perf.** Tests alone are not sufficient verification. A milestone is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `src/ai/ai.test.ts` runs 200 self play games. Every game terminates within 20 rounds and no action is illegal.
-- [ ] The heuristic bot beats the random bot in at least 55 percent and at most 95 percent of 200 seeded games.
-- [ ] `chooseAction` never mutates state and returns the same action for the same state and seed.
-- [ ] Live. `npm run selfplay -- --games 200 --seed 7` prints the win rate and the average game length. Save the output at `docs/evidence/ac-05-selfplay.txt`.
-- [ ] Perf. Decision p95 under 10 ms. A full AI game under 2 s. Record both numbers.
+- [x] `src/ai/ai.test.ts` runs 200 self play games. Every game terminates within 20 rounds and no action is illegal.
+- [x] The heuristic bot beats the random bot in at least 55 percent and at most 95 percent of 200 seeded games. Measured 91.5 percent on seed 7.
+- [x] `chooseAction` never mutates state and returns the same action for the same state and seed.
+- [x] Live. `npm run selfplay -- --games 200 --seed 7` prints the win rate and the average game length. Output at `docs/evidence/ac-05-selfplay.txt`.
+- [x] Perf. Decision p95 under 10 ms. A full AI game under 2 s. Decision p95 5.627 ms. Longest game 532.77 ms.
 
 **Review gate.** None. AC-05 changes no interaction.
 
