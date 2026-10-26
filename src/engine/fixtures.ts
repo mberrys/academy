@@ -9,6 +9,11 @@ export const TEST_CATALOG: Record<string, CardDef> = {
   'test-school': { id: 'test-school', name: 'Test School', type: 'school', cost: 2 },
   'test-school-2': { id: 'test-school-2', name: 'Test School Two', type: 'school', cost: 2 },
   'test-token': { id: 'test-token', name: 'Test Token', type: 'token', cost: 0, attack: 1, health: 1 },
+  'test-quick': { id: 'test-quick', name: 'Test Quick', type: 'thinker', cost: 2, attack: 2, health: 2, keywords: ['quickAttack'] },
+  'test-barrier': { id: 'test-barrier', name: 'Test Barrier', type: 'thinker', cost: 2, attack: 1, health: 2, keywords: ['barrier'] },
+  'test-tough': { id: 'test-tough', name: 'Test Tough', type: 'thinker', cost: 2, attack: 0, health: 3, keywords: ['tough'] },
+  'test-overwhelm': { id: 'test-overwhelm', name: 'Test Overwhelm', type: 'thinker', cost: 4, attack: 4, health: 4, keywords: ['overwhelm'] },
+  'test-challenger': { id: 'test-challenger', name: 'Test Challenger', type: 'thinker', cost: 2, attack: 2, health: 2, keywords: ['challenger'] },
 };
 
 export function deckOf(defId: string, count = 40): string[] {

@@ -4,7 +4,7 @@ function cardView(card: CardInstance | null): unknown {
   if (!card) {
     return null;
   }
-  return [card.instanceId, card.defId, card.damage, card.slot ?? null, card.costDelta, card.grantedKeywords, card.isCopy];
+  return [card.instanceId, card.defId, card.damage, card.slot ?? null, card.costDelta, card.grantedKeywords, card.isCopy, card.barrierConsumed];
 }
 
 function fnv1a(input: string): string {
@@ -24,6 +24,8 @@ export function hashState(state: GameState): string {
     activePlayer: state.activePlayer,
     priority: state.priority,
     consecutivePasses: state.consecutivePasses,
+    combat: state.combat,
+    combatUsed: state.combatUsed,
     winner: state.winner,
     players: (['p1', 'p2'] as const).map((player) => {
       const playerState = state.players[player];

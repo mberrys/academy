@@ -29,6 +29,8 @@ export function startRound(state: GameState): GameEvent[] {
     state.attackToken = otherPlayer(state.attackToken);
   }
   state.phase = 'actions';
+  state.combat = null;
+  state.combatUsed = false;
   state.players.p1.energy = Math.min(state.round, MAX_ENERGY);
   state.players.p2.energy = Math.min(state.round, MAX_ENERGY);
   state.activePlayer = state.attackToken;

@@ -35,6 +35,7 @@ export type CardInstance = {
   costDelta: number;
   grantedKeywords: Keyword[];
   isCopy: boolean;
+  barrierConsumed: boolean;
   enteredRound: number;
 };
 
@@ -60,9 +61,35 @@ export type GameEvent =
   | { type: 'burned'; player: PlayerId; defId: string }
   | { type: 'played'; player: PlayerId; defId: string; slot?: number }
   | { type: 'passed'; player: PlayerId }
+  | { type: 'attacked'; player: PlayerId; assignments: AttackAssignment[] }
+  | { type: 'intercepted'; attackerId: string; blockerId: string }
+  | { type: 'challenged'; challengerId: string; targetId: string; slot: number }
+  | { type: 'damagedUnit'; instanceId: string; amount: number; lethal: boolean }
+  | { type: 'damagedNexus'; player: PlayerId; amount: number }
+  | { type: 'died'; instanceId: string; defId: string }
   | { type: 'roundStarted'; round: number; activePlayer: PlayerId }
   | { type: 'roundEnded'; round: number }
   | { type: 'gameOver'; winner: PlayerId | 'draw' };
+
+export type AttackTarget =
+  | { kind: 'unit'; instanceId: string }
+  | { kind: 'nexus' };
+
+export type AttackAssignment = {
+  attackerId: string;
+  target: AttackTarget;
+};
+
+export type InterceptorAssignment = {
+  attackerId: string;
+  blockerId: string;
+};
+
+export type CombatState = {
+  attacker: PlayerId;
+  defender: PlayerId;
+  assignments: AttackAssignment[];
+};
 
 export type GameState = {
   seed: number;
@@ -73,6 +100,8 @@ export type GameState = {
   activePlayer: PlayerId;
   priority: PlayerId;
   consecutivePasses: number;
+  combat: CombatState | null;
+  combatUsed: boolean;
   players: Record<PlayerId, PlayerState>;
   row: (CardInstance | null)[];
   back: Record<PlayerId, (CardInstance | null)[]>;
@@ -84,6 +113,8 @@ export type GameState = {
 export type Action =
   | { type: 'MULLIGAN'; player: PlayerId; cardIds: string[] }
   | { type: 'PLAY_CARD'; player: PlayerId; cardId: string; slot?: number }
+  | { type: 'DECLARE_ATTACK'; player: PlayerId; assignments: AttackAssignment[] }
+  | { type: 'ASSIGN_INTERCEPTORS'; player: PlayerId; interceptors: InterceptorAssignment[] }
   | { type: 'PASS'; player: PlayerId };
 
 export type ActionError =
@@ -98,7 +129,14 @@ export type ActionError =
   | 'slot-occupied'
   | 'champion-limit'
   | 'school-limit'
-  | 'mulligan-used';
+  | 'mulligan-used'
+  | 'not-your-turn'
+  | 'combat-pending'
+  | 'already-attacked'
+  | 'no-attackers'
+  | 'invalid-attacker'
+  | 'invalid-target'
+  | 'invalid-interceptor';
 
 export type ActionResult =
   | { ok: true; state: GameState; events: GameEvent[] }

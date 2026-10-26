@@ -39,6 +39,7 @@ function fillRow(state: GameState): void {
       costDelta: 0,
       grantedKeywords: [],
       isCopy: false,
+      barrierConsumed: false,
       enteredRound: 1,
     };
     state.row[slot] = card;
