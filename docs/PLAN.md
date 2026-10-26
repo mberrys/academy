@@ -1,7 +1,7 @@
 # Academy scaffold plan
 
 Academy is a two-player card game about philosophy. This plan builds a playable vertical slice against a computer opponent, plus the documentation a new contributor needs.
-Three champions, 36 cards, a pure TypeScript engine, a React UI, and six documents.
+Three champions, 36 deckable cards, two tokens, a pure TypeScript engine, a React UI, and six documents plus a README.
 The rule the build enforces is that the engine is a pure function of state and action, so every rule is testable and every game is replayable.
 The work runs as seven milestones, AC-01 to AC-07.
 
