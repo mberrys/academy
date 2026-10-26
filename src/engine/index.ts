@@ -5,3 +5,6 @@ export * from './actions';
 export * from './legality';
 export * from './turn';
 export * from './hash';
+export * from './zones';
+export * from './keywords';
+export * from './combat';

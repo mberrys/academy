@@ -1,5 +1,14 @@
-import { BACK_SLOTS, ROW_SLOTS } from './types';
-import type { Action, ActionError, CardDef, CardInstance, GameState, PlayerId } from './types';
+import { adjacentSlots, emptyBackSlots, emptyRowSlots, findRowUnit } from './zones';
+import type {
+  Action,
+  ActionError,
+  AttackAssignment,
+  CardDef,
+  CardInstance,
+  GameState,
+  InterceptorAssignment,
+  PlayerId,
+} from './types';
 
 export function costOf(card: CardInstance, def: CardDef): number {
   return Math.max(0, def.cost + card.costDelta);
@@ -18,29 +27,23 @@ function controlledSchool(state: GameState, player: PlayerId, defId: string): Ca
   return state.back[player].find((card) => card?.defId === defId) ?? undefined;
 }
 
-function emptyRowSlots(state: GameState): number[] {
-  const slots: number[] = [];
-  for (let slot = 0; slot < ROW_SLOTS; slot += 1) {
-    if (!state.row[slot]) {
-      slots.push(slot);
-    }
-  }
-  return slots;
-}
-
-function emptyBackSlots(state: GameState, player: PlayerId): number[] {
-  const slots: number[] = [];
-  for (let slot = 0; slot < BACK_SLOTS; slot += 1) {
-    if (!state.back[player][slot]) {
-      slots.push(slot);
-    }
-  }
-  return slots;
-}
-
 export function validateAction(state: GameState, action: Action): ActionError | null {
   if (state.phase === 'over') {
     return 'game-over';
+  }
+
+  if (state.combat) {
+    if (action.type !== 'ASSIGN_INTERCEPTORS') {
+      return 'combat-pending';
+    }
+    if (action.player !== state.combat.defender) {
+      return 'not-your-turn';
+    }
+    return validateInterceptors(state, action.interceptors);
+  }
+
+  if (action.type === 'ASSIGN_INTERCEPTORS') {
+    return 'wrong-phase';
   }
 
   if (action.type === 'MULLIGAN') {
@@ -71,6 +74,9 @@ export function validateAction(state: GameState, action: Action): ActionError | 
   }
   if (action.type === 'PASS') {
     return null;
+  }
+  if (action.type === 'DECLARE_ATTACK') {
+    return validateAttack(state, action.player, action.assignments);
   }
 
   const player = state.players[action.player];
@@ -118,9 +124,165 @@ export function validateAction(state: GameState, action: Action): ActionError | 
   return null;
 }
 
+function validateAttack(
+  state: GameState,
+  player: PlayerId,
+  assignments: AttackAssignment[],
+): ActionError | null {
+  if (player !== state.activePlayer) {
+    return 'not-your-turn';
+  }
+  if (state.combatUsed) {
+    return 'already-attacked';
+  }
+  if (assignments.length === 0) {
+    return 'no-attackers';
+  }
+
+  const seen = new Set<string>();
+  for (const assignment of assignments) {
+    if (seen.has(assignment.attackerId)) {
+      return 'invalid-attacker';
+    }
+    seen.add(assignment.attackerId);
+
+    const attacker = findRowUnit(state, assignment.attackerId);
+    if (!attacker || attacker.owner !== player || attacker.enteredRound >= state.round) {
+      return 'invalid-attacker';
+    }
+
+    if (assignment.target.kind === 'unit') {
+      const target = findRowUnit(state, assignment.target.instanceId);
+      if (!target || target.owner === player) {
+        return 'invalid-target';
+      }
+    }
+  }
+  return null;
+}
+
+function validateInterceptors(
+  state: GameState,
+  interceptors: InterceptorAssignment[],
+): ActionError | null {
+  const combat = state.combat;
+  if (!combat) {
+    return 'wrong-phase';
+  }
+
+  const seenAttackers = new Set<string>();
+  const seenBlockers = new Set<string>();
+  const byAttacker = new Map(combat.assignments.map((assignment) => [assignment.attackerId, assignment]));
+
+  for (const interceptor of interceptors) {
+    if (seenAttackers.has(interceptor.attackerId) || seenBlockers.has(interceptor.blockerId)) {
+      return 'invalid-interceptor';
+    }
+    seenAttackers.add(interceptor.attackerId);
+    seenBlockers.add(interceptor.blockerId);
+
+    const assignment = byAttacker.get(interceptor.attackerId);
+    if (!assignment || assignment.target.kind !== 'unit') {
+      return 'invalid-interceptor';
+    }
+
+    const target = findRowUnit(state, assignment.target.instanceId);
+    if (!target || target.slot === undefined) {
+      return 'invalid-interceptor';
+    }
+
+    const blocker = findRowUnit(state, interceptor.blockerId);
+    if (!blocker || blocker.owner !== combat.defender || blocker.slot === undefined) {
+      return 'invalid-interceptor';
+    }
+
+    if (!adjacentSlots(target.slot).includes(blocker.slot)) {
+      return 'invalid-interceptor';
+    }
+  }
+  return null;
+}
+
+function legalAttacks(state: GameState, player: PlayerId): Action[] {
+  const attackers = state.row.filter(
+    (card): card is CardInstance => card !== null && card.owner === player && card.enteredRound < state.round,
+  );
+  if (attackers.length === 0) {
+    return [];
+  }
+
+  const enemies = state.row.filter((card): card is CardInstance => card !== null && card.owner !== player);
+  const actions: Action[] = [];
+
+  actions.push({
+    type: 'DECLARE_ATTACK',
+    player,
+    assignments: attackers.map((attacker) => ({ attackerId: attacker.instanceId, target: { kind: 'nexus' as const } })),
+  });
+
+  for (const attacker of attackers) {
+    actions.push({
+      type: 'DECLARE_ATTACK',
+      player,
+      assignments: [{ attackerId: attacker.instanceId, target: { kind: 'nexus' } }],
+    });
+  }
+
+  for (const enemy of enemies) {
+    actions.push({
+      type: 'DECLARE_ATTACK',
+      player,
+      assignments: attackers.map((attacker) => ({
+        attackerId: attacker.instanceId,
+        target: { kind: 'unit' as const, instanceId: enemy.instanceId },
+      })),
+    });
+  }
+
+  for (const attacker of attackers) {
+    for (const enemy of enemies) {
+      actions.push({
+        type: 'DECLARE_ATTACK',
+        player,
+        assignments: [{ attackerId: attacker.instanceId, target: { kind: 'unit', instanceId: enemy.instanceId } }],
+      });
+    }
+  }
+
+  return actions;
+}
+
 export function getLegalActions(state: GameState, player: PlayerId = state.priority): Action[] {
   if (state.phase === 'over') {
     return [];
+  }
+
+  if (state.combat) {
+    if (player !== state.combat.defender) {
+      return [];
+    }
+    const actions: Action[] = [{ type: 'ASSIGN_INTERCEPTORS', player, interceptors: [] }];
+    for (const assignment of state.combat.assignments) {
+      if (assignment.target.kind !== 'unit') {
+        continue;
+      }
+      const target = findRowUnit(state, assignment.target.instanceId);
+      if (!target || target.slot === undefined) {
+        continue;
+      }
+      for (const slot of adjacentSlots(target.slot)) {
+        const blocker = state.row[slot];
+        if (!blocker || blocker.owner !== player) {
+          continue;
+        }
+        actions.push({
+          type: 'ASSIGN_INTERCEPTORS',
+          player,
+          interceptors: [{ attackerId: assignment.attackerId, blockerId: blocker.instanceId }],
+        });
+      }
+    }
+    return actions;
   }
 
   if (state.phase === 'mulligan') {
@@ -141,6 +303,9 @@ export function getLegalActions(state: GameState, player: PlayerId = state.prior
 
   const playerState = state.players[player];
   const actions: Action[] = [];
+  if (player === state.activePlayer && !state.combatUsed) {
+    actions.push(...legalAttacks(state, player));
+  }
 
   for (const card of playerState.hand) {
     const def = state.catalog[card.defId];

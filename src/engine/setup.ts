@@ -34,6 +34,7 @@ export function createGame(options: CreateGameOptions): GameState {
       costDelta: 0,
       grantedKeywords: [],
       isCopy: false,
+      barrierConsumed: false,
       enteredRound: 0,
     }));
 
@@ -74,6 +75,8 @@ export function createGame(options: CreateGameOptions): GameState {
     activePlayer: firstPlayer,
     priority: firstPlayer,
     consecutivePasses: 0,
+    combat: null,
+    combatUsed: false,
     players,
     row: Array.from({ length: ROW_SLOTS }, () => null),
     back: {

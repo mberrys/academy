@@ -1,7 +1,10 @@
+import { assignInterceptors, declareAttack } from './combat';
+import { applyChallenger } from './keywords';
 import { costOf, validateAction } from './legality';
 import { shuffle } from './rng';
 import { drawCard, endRound, startRound } from './turn';
 import { otherPlayer } from './types';
+import { placeSchool, placeUnit } from './zones';
 import type {
   Action,
   ActionResult,
@@ -30,6 +33,12 @@ export function applyAction(state: GameState, action: Action): ActionResult {
     case 'PLAY_CARD':
       events = playCard(next, action.player, action.cardId, action.slot);
       break;
+    case 'DECLARE_ATTACK':
+      events = declareAttack(next, action.player, action.assignments);
+      break;
+    case 'ASSIGN_INTERCEPTORS':
+      events = assignInterceptors(next, action.player, action.interceptors);
+      break;
     case 'PASS':
       events = pass(next, action.player);
       break;
@@ -47,30 +56,6 @@ function spend(player: PlayerState, def: CardDef, card: CardInstance): void {
     remaining -= fromSpell;
   }
   player.energy -= remaining;
-}
-
-function placeUnit(state: GameState, card: CardInstance, slot?: number): number {
-  const target = slot ?? state.row.findIndex((entry) => entry === null);
-  if (target < 0 || target >= state.row.length || state.row[target]) {
-    throw new Error('Unit placement violated validation');
-  }
-  state.row[target] = card;
-  card.zone = 'row';
-  card.slot = target;
-  card.enteredRound = state.round;
-  return target;
-}
-
-function placeSchool(state: GameState, player: PlayerId, card: CardInstance, slot?: number): number {
-  const back = state.back[player];
-  const target = slot ?? back.findIndex((entry) => entry === null);
-  if (target < 0 || target >= back.length || back[target]) {
-    throw new Error('School placement violated validation');
-  }
-  back[target] = card;
-  card.zone = 'back';
-  card.slot = target;
-  return target;
 }
 
 function mulligan(state: GameState, player: PlayerId, cardIds: string[]): GameEvent[] {
@@ -131,6 +116,7 @@ function playCard(state: GameState, player: PlayerId, cardId: string, slot?: num
   } else {
     const placed = placeUnit(state, card, slot);
     events.push({ type: 'played', player, defId: card.defId, slot: placed });
+    events.push(...applyChallenger(state, card, def));
   }
 
   playerState.playedThisRound.push(card.defId);
