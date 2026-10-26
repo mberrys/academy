@@ -1,9 +1,16 @@
 import { adjacentSlots } from './zones';
 import type { CardDef, CardInstance, GameEvent, GameState, Keyword } from './types';
 
-export function hasKeyword(card: CardInstance, def: CardDef, keyword: Keyword): boolean {
+export function hasKeyword(
+  state: GameState,
+  card: CardInstance,
+  def: CardDef,
+  keyword: Keyword,
+): boolean {
   const printed = def.keywords?.includes(keyword) ?? false;
-  const granted = card.grantedKeywords.includes(keyword);
+  const granted = card.keywordGrants.some(
+    (grant) => grant.keyword === keyword && (grant.expiresRound === null || grant.expiresRound >= state.round),
+  );
   if (keyword === 'barrier') {
     return (printed || granted) && !card.barrierConsumed;
   }
@@ -11,7 +18,7 @@ export function hasKeyword(card: CardInstance, def: CardDef, keyword: Keyword): 
 }
 
 export function applyChallenger(state: GameState, unit: CardInstance, def: CardDef): GameEvent[] {
-  if (!hasKeyword(unit, def, 'challenger') || unit.slot === undefined) {
+  if (!hasKeyword(state, unit, def, 'challenger') || unit.slot === undefined) {
     return [];
   }
 

@@ -2,6 +2,8 @@ import { applyAction, createGame, getLegalActions, hashState } from '../src/engi
 import type { Action, CardInstance, GameState, PlayerId } from '../src/engine';
 import { nextRandom } from '../src/engine/rng';
 import { TEST_CATALOG, testArguments } from '../src/engine/fixtures';
+import { CARD_CATALOG, DECKS } from '../src/cards';
+import { runChampionDemo } from './champion-demo';
 
 function arg(name: string, fallback: string): string {
   const index = process.argv.indexOf(name);
@@ -44,8 +46,10 @@ function makeUnit(id: string, defId: string, owner: PlayerId, slot: number): Car
     zone: 'row',
     slot,
     damage: 0,
+    buffs: [],
+    keywordGrants: [],
     costDelta: 0,
-    grantedKeywords: [],
+    costDeltaExpiresRound: null,
     isCopy: false,
     barrierConsumed: false,
     enteredRound: 0,
@@ -96,6 +100,61 @@ function runCombatScenario(): void {
 
 if (process.argv.includes('--combat')) {
   runCombatScenario();
+  process.exit(0);
+}
+
+const championChoice = arg('--champion', '');
+if (championChoice) {
+  runChampionDemo(seed, championChoice);
+  process.exit(0);
+}
+
+function newCardGame(gameSeed: number): GameState {
+  return createGame({
+    seed: gameSeed,
+    catalog: CARD_CATALOG,
+    decks: { p1: DECKS.marx, p2: DECKS.lacan },
+    champions: { p1: 'marx', p2: 'lacan' },
+  });
+}
+
+if (process.argv.includes('--cards')) {
+  let state = mulliganed(newCardGame(seed));
+  let rng = (seed ^ 0x9e3779b9) >>> 0;
+  let actions = 0;
+  let plays = 0;
+  let summons = 0;
+  let levels = 0;
+
+  while (state.phase !== 'over' && state.round <= maxRounds && actions < 2000) {
+    const player = state.phase === 'mulligan' ? mulliganPhasePlayer(state) : state.priority;
+    const legal = getLegalActions(state, player);
+    if (legal.length === 0) {
+      break;
+    }
+    const next = nextRandom(rng);
+    rng = next.state;
+    const action = legal[Math.floor(next.value * legal.length)] as Action;
+    const result = applyAction(state, action);
+    if (!result.ok) {
+      throw new Error(`Illegal action ${action.type}: ${result.error}`);
+    }
+    state = result.state;
+    actions += 1;
+    for (const event of result.events) {
+      if (event.type === 'played') {
+        plays += 1;
+      } else if (event.type === 'summoned') {
+        summons += 1;
+      } else if (event.type === 'leveledUp') {
+        levels += 1;
+      }
+    }
+  }
+
+  console.log(
+    `cards seed=${seed} round=${state.round} phase=${state.phase} winner=${state.winner ?? 'none'} actions=${actions} plays=${plays} summons=${summons} levels=${levels} hash=${hashState(state)}`,
+  );
   process.exit(0);
 }
 

@@ -1,18 +1,17 @@
+import { statsOf } from './auras';
+import { costOf } from './cost';
 import { adjacentSlots, emptyBackSlots, emptyRowSlots, findRowUnit } from './zones';
+import { otherPlayer } from './types';
 import type {
   Action,
   ActionError,
   AttackAssignment,
-  CardDef,
   CardInstance,
   GameState,
   InterceptorAssignment,
   PlayerId,
+  TargetRequirement,
 } from './types';
-
-export function costOf(card: CardInstance, def: CardDef): number {
-  return Math.max(0, def.cost + card.costDelta);
-}
 
 function controlledChampion(state: GameState, player: PlayerId): CardInstance | undefined {
   return state.row.find((card) => {
@@ -25,6 +24,58 @@ function controlledChampion(state: GameState, player: PlayerId): CardInstance | 
 
 function controlledSchool(state: GameState, player: PlayerId, defId: string): CardInstance | undefined {
   return state.back[player].find((card) => card?.defId === defId) ?? undefined;
+}
+
+function findTarget(
+  state: GameState,
+  player: PlayerId,
+  targetId: string | undefined,
+  requirement: TargetRequirement,
+): CardInstance | undefined {
+  if (!targetId) {
+    return undefined;
+  }
+
+  if (requirement.kind === 'enemySchool') {
+    return state.back[otherPlayer(player)].find((card) => card?.instanceId === targetId) ?? undefined;
+  }
+
+  const unit = findRowUnit(state, targetId);
+  if (!unit) {
+    return undefined;
+  }
+
+  switch (requirement.kind) {
+    case 'unit':
+      break;
+    case 'enemyUnit':
+      if (unit.owner === player) {
+        return undefined;
+      }
+      break;
+    case 'allyUnit':
+      if (unit.owner !== player) {
+        return undefined;
+      }
+      break;
+    case 'allyNonChampion':
+      if (unit.owner !== player || state.catalog[unit.defId]?.type === 'champion') {
+        return undefined;
+      }
+      break;
+    default:
+      return undefined;
+  }
+
+  if (requirement.kind === 'unit' || requirement.kind === 'enemyUnit') {
+    if (requirement.minAttack !== undefined) {
+      const def = state.catalog[unit.defId];
+      if (!def || statsOf(state, unit, def).attack < requirement.minAttack) {
+        return undefined;
+      }
+    }
+  }
+  return unit;
 }
 
 export function validateAction(state: GameState, action: Action): ActionError | null {
@@ -89,7 +140,18 @@ export function validateAction(state: GameState, action: Action): ActionError | 
     return 'invalid-card';
   }
 
-  const cost = costOf(card, def);
+  const cost = costOf(state, action.player, card);
+  if (def.target && !findTarget(state, action.player, action.targetId, def.target)) {
+    return 'invalid-target';
+  }
+  if (
+    def.id === 'class-struggle'
+    && !state.row.some(
+      (unit) => unit?.owner === action.player && state.catalog[unit.defId]?.type !== 'champion',
+    )
+  ) {
+    return 'invalid-target';
+  }
   if (def.type === 'argument') {
     return player.spellMana + player.energy >= cost ? null : 'insufficient-energy';
   }
@@ -203,6 +265,27 @@ function validateInterceptors(
   return null;
 }
 
+function targetActions(
+  state: GameState,
+  player: PlayerId,
+  card: CardInstance,
+  requirement: TargetRequirement,
+): Action[] {
+  if (requirement.kind === 'enemySchool') {
+    return state.back[otherPlayer(player)]
+      .filter((school): school is CardInstance => school !== null)
+      .map((school) => ({ type: 'PLAY_CARD', player, cardId: card.instanceId, targetId: school.instanceId }));
+  }
+
+  const actions: Action[] = [];
+  for (const unit of state.row) {
+    if (unit && findTarget(state, player, unit.instanceId, requirement)) {
+      actions.push({ type: 'PLAY_CARD', player, cardId: card.instanceId, targetId: unit.instanceId });
+    }
+  }
+  return actions;
+}
+
 function legalAttacks(state: GameState, player: PlayerId): Action[] {
   const attackers = state.row.filter(
     (card): card is CardInstance => card !== null && card.owner === player && card.enteredRound < state.round,
@@ -312,11 +395,23 @@ export function getLegalActions(state: GameState, player: PlayerId = state.prior
     if (!def) {
       continue;
     }
-    const cost = costOf(card, def);
+    const cost = costOf(state, player, card);
 
     if (def.type === 'argument') {
+      if (
+        def.id === 'class-struggle'
+        && !state.row.some(
+          (unit) => unit?.owner === player && state.catalog[unit.defId]?.type !== 'champion',
+        )
+      ) {
+        continue;
+      }
       if (playerState.spellMana + playerState.energy >= cost) {
-        actions.push({ type: 'PLAY_CARD', player, cardId: card.instanceId });
+        if (def.target) {
+          actions.push(...targetActions(state, player, card, def.target));
+        } else {
+          actions.push({ type: 'PLAY_CARD', player, cardId: card.instanceId });
+        }
       }
       continue;
     }

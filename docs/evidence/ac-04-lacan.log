@@ -1,0 +1,8 @@
+
+> academy@0.1.0 sim
+> tsx scripts/sim.ts --seed 5 --champion lacan
+
+champion=lacan seed=5 opponent=luther
+{"type":"leveledUp","player":"p1","instanceId":"gen-0","defId":"lacan-2"}
+{"type":"gameOver","winner":"p1"}
+champion=lacan seed=5 round=5 phase=over winner=p1 level=2 hash=a95e16bc

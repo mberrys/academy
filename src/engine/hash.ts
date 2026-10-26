@@ -4,7 +4,7 @@ function cardView(card: CardInstance | null): unknown {
   if (!card) {
     return null;
   }
-  return [card.instanceId, card.defId, card.damage, card.slot ?? null, card.costDelta, card.grantedKeywords, card.isCopy, card.barrierConsumed];
+  return [card.instanceId, card.defId, card.damage, card.slot ?? null, card.buffs, card.keywordGrants, card.costDelta, card.costDeltaExpiresRound, card.costOverride ?? null, card.isCopy, card.barrierConsumed];
 }
 
 function fnv1a(input: string): string {
@@ -26,6 +26,9 @@ export function hashState(state: GameState): string {
     consecutivePasses: state.consecutivePasses,
     combat: state.combat,
     combatUsed: state.combatUsed,
+    delayed: state.delayed,
+    turnStartPending: state.turnStartPending,
+    nextInstanceId: state.nextInstanceId,
     winner: state.winner,
     players: (['p1', 'p2'] as const).map((player) => {
       const playerState = state.players[player];
@@ -37,8 +40,11 @@ export function hashState(state: GameState): string {
         hand: playerState.hand.map(cardView),
         discard: playerState.discard.map(cardView),
         playedThisRound: playerState.playedThisRound,
+        argumentDiscount: playerState.argumentDiscount,
+        triggeredThisRound: playerState.triggeredThisRound,
         championProgress: playerState.championProgress,
         championLevel: playerState.championLevel,
+        pendingChampionTransform: playerState.pendingChampionTransform,
         mulliganUsed: playerState.mulliganUsed,
       };
     }),

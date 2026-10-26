@@ -1,5 +1,8 @@
+import { statsOf } from './auras';
+import { damageNexus, damageUnit } from './damage';
 import { hasKeyword } from './keywords';
-import { findRowUnit, removeFromRow } from './zones';
+import { runTrigger } from './triggers';
+import { findRowUnit } from './zones';
 import { otherPlayer } from './types';
 import type {
   AttackAssignment,
@@ -28,10 +31,20 @@ export function declareAttack(
           : { kind: 'nexus' },
     })),
   };
+
+  const events: GameEvent[] = [];
+  for (const assignment of combat.assignments) {
+    const attacker = findRowUnit(state, assignment.attackerId);
+    if (attacker) {
+      runTrigger(state, 'onAttack', attacker, player, events);
+    }
+  }
+
   state.combat = combat;
   state.combatUsed = true;
   state.priority = combat.defender;
-  return [{ type: 'attacked', player, assignments: combat.assignments }];
+  events.push({ type: 'attacked', player, assignments: combat.assignments });
+  return events;
 }
 
 export function assignInterceptors(
@@ -103,23 +116,18 @@ function resolveDuel(
   }
 
   const events: GameEvent[] = [];
-  const attackerDamage = attackerDef.attack ?? 0;
-  const defenderDamage = defenderDef.attack ?? 0;
-  const quick = hasKeyword(attacker, attackerDef, 'quickAttack');
-  const overwhelm = hasKeyword(attacker, attackerDef, 'overwhelm');
-  const remaining = Math.max(0, (defenderDef.health ?? 0) - defender.damage);
+  const attackerStats = statsOf(state, attacker, attackerDef);
+  const defenderStats = statsOf(state, defender, defenderDef);
+  const quick = hasKeyword(state, attacker, attackerDef, 'quickAttack');
+  const overwhelm = hasKeyword(state, attacker, attackerDef, 'overwhelm');
+  const remaining = Math.max(0, defenderStats.health - defender.damage);
 
-  const hit = applyDamage(state, defender, defenderDef, attackerDamage, events);
+  const hit = damageUnit(state, defender, defenderDef, attackerStats.attack, events);
   if (overwhelm && hit.dealt > 0) {
     const excess = Math.max(0, hit.dealt - remaining);
     if (excess > 0) {
-      const nexusOwner = defender.owner;
-      state.players[nexusOwner].health -= excess;
-      events.push({ type: 'damagedNexus', player: nexusOwner, amount: excess });
-      if (state.players[nexusOwner].health <= 0) {
-        state.winner = attacker.owner;
-        state.phase = 'over';
-        events.push({ type: 'gameOver', winner: attacker.owner });
+      damageNexus(state, defender.owner, excess, events);
+      if (state.phase === 'over') {
         return events;
       }
     }
@@ -129,54 +137,13 @@ function resolveDuel(
     return events;
   }
 
-  applyDamage(state, attacker, attackerDef, defenderDamage, events);
+  damageUnit(state, attacker, attackerDef, defenderStats.attack, events);
   return events;
 }
 
 function strikeNexus(state: GameState, attacker: CardInstance, attackerDef: CardDef): GameEvent[] {
-  const amount = attackerDef.attack ?? 0;
-  if (amount <= 0) {
-    return [];
-  }
-  const nexusOwner = otherPlayer(attacker.owner);
   const events: GameEvent[] = [];
-  state.players[nexusOwner].health -= amount;
-  events.push({ type: 'damagedNexus', player: nexusOwner, amount });
-  if (state.players[nexusOwner].health <= 0) {
-    state.winner = attacker.owner;
-    state.phase = 'over';
-    events.push({ type: 'gameOver', winner: attacker.owner });
-  }
+  const amount = statsOf(state, attacker, attackerDef).attack;
+  damageNexus(state, otherPlayer(attacker.owner), amount, events);
   return events;
-}
-
-function applyDamage(
-  state: GameState,
-  card: CardInstance,
-  def: CardDef,
-  amount: number,
-  events: GameEvent[],
-): { dealt: number; died: boolean } {
-  if (amount <= 0) {
-    return { dealt: 0, died: false };
-  }
-
-  if (hasKeyword(card, def, 'barrier')) {
-    card.barrierConsumed = true;
-    events.push({ type: 'damagedUnit', instanceId: card.instanceId, amount: 0, lethal: false });
-    return { dealt: 0, died: false };
-  }
-
-  const dealt = hasKeyword(card, def, 'tough') ? Math.max(0, amount - 1) : amount;
-  card.damage += dealt;
-  const health = def.health ?? 0;
-  const died = card.damage >= health;
-  events.push({ type: 'damagedUnit', instanceId: card.instanceId, amount: dealt, lethal: died });
-
-  if (died) {
-    events.push({ type: 'died', instanceId: card.instanceId, defId: card.defId });
-    removeFromRow(state, card);
-  }
-
-  return { dealt, died };
 }

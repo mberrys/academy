@@ -1,0 +1,6 @@
+
+> academy@0.1.0 perf:cards
+> tsx scripts/perf-cards.ts
+
+scripted_ms=25.71 round=12 phase=over winner=p2
+games=1000 crashes=0 unfinished=0 p1=320 p2=373 draws=307

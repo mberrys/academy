@@ -1,0 +1,8 @@
+
+> academy@0.1.0 sim
+> tsx scripts/sim.ts --seed 5 --champion luther
+
+champion=luther seed=5 opponent=marx
+{"type":"leveledUp","player":"p1","instanceId":"gen-0","defId":"luther-2"}
+{"type":"gameOver","winner":"p1"}
+champion=luther seed=5 round=5 phase=over winner=p1 level=2 hash=61e71da0

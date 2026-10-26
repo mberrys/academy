@@ -120,26 +120,26 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 **Deliverables.**
 
-- [ ] Create `src/engine/effects.ts` with the effect registry and handlers for damage, heal, buff, grant a keyword, draw, summon, return to hand, destroy, gain energy, cost reduction, copy, create a card in hand, clone a unit, and delayed effect. Target scopes cover a single unit, all enemy units, all allied units, the nexus, and a School.
-- [ ] Create `src/engine/auras.ts` with source-keyed static modifiers for the School effects, Existentialism, the Luther level 2 aura, and the Marx level 2 bomb modifier. Recompute them when stats or costs are read, and drop them when the source leaves play.
-- [ ] Create `src/engine/cost.ts` with `costOf(state, player, instance)`. It applies the floor at 0 and serves legality, the UI, and the AI.
-- [ ] Create `src/engine/placement.ts` with the leftmost empty slot rule and partial summons.
-- [ ] Create `src/engine/triggers.ts` with the trigger bus, the ordering rule, the after condition, and the earlier this round condition.
-- [ ] Create `src/engine/delayed.ts` with the delayed effect queue that resolves at turn start.
-- [ ] Create `src/engine/champions.ts` with level progress, the two form transform, the transform timing rules, and progress persistence.
-- [ ] Create `src/cards/` with one file per champion set, one neutral file, one token file, and an `index.ts` registry.
-- [ ] Create `src/cards/decks.ts` with the three 40 card decklists from Appendix E.
-- [ ] Create `src/cards/validate.ts` with the data integrity checks used by the test suite.
+- [x] Create `src/engine/effects.ts` with the effect registry and handlers for damage, heal, buff, grant a keyword, draw, summon, return to hand, destroy, gain energy, cost reduction, copy, create a card in hand, clone a unit, and delayed effect. Target scopes cover a single unit, all enemy units, all allied units, the nexus, and a School.
+- [x] Create `src/engine/auras.ts` with source-keyed static modifiers for the School effects, Existentialism, the Luther level 2 aura, and the Marx level 2 bomb modifier. Recompute them when stats or costs are read, and drop them when the source leaves play.
+- [x] Create `src/engine/cost.ts` with `costOf(state, player, instance)`. It applies the floor at 0 and serves legality, the UI, and the AI.
+- [x] Create `src/engine/placement.ts` with the leftmost empty slot rule and partial summons.
+- [x] Create `src/engine/triggers.ts` with the trigger bus, the ordering rule, the after condition, and the earlier this round condition.
+- [x] Create `src/engine/delayed.ts` with the delayed effect queue that resolves at turn start.
+- [x] Create `src/engine/champions.ts` with level progress, the two form transform, the transform timing rules, and progress persistence.
+- [x] Create `src/cards/` with one file per champion set, one neutral file, one token file, and an `index.ts` registry.
+- [x] Create `src/cards/decks.ts` with the three 40 card decklists from Appendix E.
+- [x] Create `src/cards/validate.ts` with the data integrity checks used by the test suite.
 
 **Verify, unit and perf.** Tests alone are not sufficient verification. A milestone is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `src/cards/cards.test.ts` asserts unique ids, valid effect references, a cost and stats on every deckable card, and a legal deck for each champion. Legal means exactly 40 cards, at most 3 copies, 3 champion copies, and one copy of each School.
-- [ ] `src/engine/effects.test.ts` covers every handler at least once, including all enemy and all allied scopes, a School target, a keyword grant, and a copy of each Argument played this round.
-- [ ] `src/engine/triggers.test.ts` covers active player first ordering, the after and earlier this round conditions, one trigger per event, and no infinite loop on a copied trigger.
-- [ ] `src/engine/rules.test.ts` covers the Appendix F rules. Unit membership, one champion per player, play versus summon, placement and partial summons, entering play, target legality, hand overflow, the cost floor, static bonuses, transform timing, and the strongest and weakest tiebreaks.
-- [ ] `src/engine/champions.test.ts` levels each champion through its condition and asserts the complete level two text and stats. Marx resolves three Time Bombs. Lacan plays three copied cards. Luther summons six followers.
-- [ ] Live. `npm run sim -- --seed 5 --champion marx` reaches a terminal state and logs the level up. Repeat for `lacan` and `luther`. Save the three logs at `docs/evidence/ac-04-<champion>.log`.
-- [ ] Perf. A scripted full game resolves in under 200 ms. 1,000 seeded games run without a crash. Record both numbers.
+- [x] `src/cards/cards.test.ts` asserts unique ids, valid effect references, a cost and stats on every deckable card, and a legal deck for each champion. Legal means exactly 40 cards, at most 3 copies, 3 champion copies, and one copy of each School.
+- [x] `src/engine/effects.test.ts` covers every handler at least once, including all enemy and all allied scopes, a School target, a keyword grant, and a copy of each Argument played this round.
+- [x] `src/engine/triggers.test.ts` covers active player first ordering, the after and earlier this round conditions, one trigger per event, and no infinite loop on a copied trigger.
+- [x] `src/engine/rules.test.ts` covers the Appendix F rules. Unit membership, one champion per player, play versus summon, placement and partial summons, entering play, target legality, hand overflow, the cost floor, static bonuses, transform timing, and the strongest and weakest tiebreaks.
+- [x] `src/engine/champions.test.ts` levels each champion through its condition and asserts the complete level two text and stats. Marx resolves three Time Bombs. Lacan plays three copied cards. Luther summons six followers.
+- [x] Live. `npm run sim -- --seed 5 --champion marx` reaches a terminal state and logs the level up. Repeat for `lacan` and `luther`. Logs at `docs/evidence/ac-04-marx.log`, `docs/evidence/ac-04-lacan.log`, and `docs/evidence/ac-04-luther.log`.
+- [x] Perf. A scripted full game resolves in under 200 ms. 1,000 seeded games run without a crash. Scripted game 25.71 ms. 1,000 games, 0 crashes, 0 unfinished, 320 p1 wins, 373 p2 wins, 307 draws. Log at `docs/evidence/ac-04-perf.log`. The 30.7 percent draw rate under a random policy is a risk recorded for AC-05.
 - [ ] Review. The card table in Appendix E and the three champion kits are the design review artifact.
 
 **Review gate.** The operator reviews the card table, the champion kits, and the decklists before merge. AC-04 is review-gated.
