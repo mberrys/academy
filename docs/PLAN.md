@@ -152,6 +152,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build the AI opponent (AC-05)
 
+**State.** Branch `ac-05-ai` at `27b0e95`. Evidence at `docs/evidence/ac-05-selfplay.txt`. 89 tests. 200 games, 91.5 percent win rate, 11.26 average rounds, p95 5.627 ms, longest game 532.77 ms.
+
 **Entry gate.** AC-04 is merged. All three champion games reach a terminal state in the harness.
 
 **Deliverables.**
