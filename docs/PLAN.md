@@ -266,7 +266,7 @@ The turn frame, the board shape, the combat model, and the champion kits were se
 
 ## Appendix E. Card set for review
 
-The table proposes the v1 set. Costs are energy. Stats are attack and health. Text is the printed text. The Deck column marks the signature cards, C for champion, S for school, N for neutral, T for token.
+The table proposes the v1 set. Costs are energy. Stats are attack and health. Text is the printed text. The Deck column marks the signature cards. C is a champion, S is a champion School, N is a neutral card or a neutral School, M is Marx, L is Lacan, U is Luther, and T is a token.
 
 The set has 40 deckable cards and 2 tokens. The six champion rows are three cards and their level 2 forms. A level 2 form is a complete replacement, not a deck card. A deck holds 3 copies of its champion's level 1 card.
 
