@@ -39,6 +39,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Bootstrap the repo and tooling (AC-01)
 
+**State.** Merged in PR #1 at `749bd4a`. Evidence, `docs/evidence/ac-01-placeholder.png`.
+
 **Entry gate.** The repo holds only `CLAUDE.md` and this plan. Node 20 or newer and npm are on the host.
 
 **Deliverables.**
@@ -63,6 +65,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 **Review gate.** None. AC-01 is not review-gated.
 
 ## Build the engine spine (AC-02)
+
+**State.** Branch `ac-02-engine-spine` at `8807c08`. Evidence, 23 tests, sim hash `e584234f`, p95 `0.167 ms`.
 
 **Entry gate.** AC-01 is merged. `npm run typecheck`, `npm run build`, and `npm test` are green on `main`.
 
