@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+
+  --paper: #f3ead7;
+  --paper-deep: #e7dcc3;
+  --card: #fbf6e9;
+  --card-opponent: #f5ead6;
+  --ink: #241f1a;
+  --ink-soft: #3b332a;
+  --muted: #5f5345;
+  --rule: #c9b898;
+  --rule-soft: #ddd1b9;
+  --oxblood: #6f2724;
+  --oxblood-bright: #8a332f;
+  --gold: #8a6420;
+  --green: #3f5539;
+  --blue: #33415e;
+  --danger: #8c2f2a;
+  --focus: #2f4f6f;
+
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-ui: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-script: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  --radius-sm: 2px;
+  --radius: 4px;
+  --radius-lg: 8px;
+
+  --shadow-card: 2px 3px 0 rgba(70, 52, 30, 0.16);
+  --shadow-card-hover: 4px 7px 0 rgba(70, 52, 30, 0.2);
+  --shadow-panel: 0 14px 40px rgba(70, 52, 30, 0.12);
+
+  --motion: 160ms;
+
+  --type-champion: var(--gold);
+  --type-thinker: var(--blue);
+  --type-argument: var(--oxblood);
+  --type-school: var(--green);
+  --type-token: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion: 0ms;
+  }
+}
