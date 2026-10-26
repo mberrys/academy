@@ -12,6 +12,7 @@
     "sim": "tsx scripts/sim.ts",
     "perf:actions": "tsx scripts/perf-actions.ts",
     "perf:combat": "tsx scripts/perf-combat.ts",
+    "perf:cards": "tsx scripts/perf-cards.ts",
     "selfplay": "tsx scripts/selfplay.ts",
     "docs:check": "tsx scripts/check-docs.ts"
   },

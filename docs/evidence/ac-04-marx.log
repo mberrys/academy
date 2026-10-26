@@ -1,0 +1,11 @@
+
+> academy@0.1.0 sim
+> tsx scripts/sim.ts --seed 5 --champion marx
+
+champion=marx seed=5 opponent=lacan
+{"type":"delayedResolved","player":"p1","kind":"timeBomb"}
+{"type":"delayedResolved","player":"p1","kind":"timeBomb"}
+{"type":"delayedResolved","player":"p1","kind":"timeBomb"}
+{"type":"leveledUp","player":"p1","instanceId":"gen-0","defId":"marx-2"}
+{"type":"gameOver","winner":"p1"}
+champion=marx seed=5 round=11 phase=over winner=p1 level=2 hash=d291cdf8

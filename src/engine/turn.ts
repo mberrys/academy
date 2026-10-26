@@ -31,6 +31,11 @@ export function startRound(state: GameState): GameEvent[] {
   state.phase = 'actions';
   state.combat = null;
   state.combatUsed = false;
+  state.turnStartPending = true;
+  state.players.p1.argumentDiscount = 0;
+  state.players.p1.triggeredThisRound = [];
+  state.players.p2.argumentDiscount = 0;
+  state.players.p2.triggeredThisRound = [];
   state.players.p1.energy = Math.min(state.round, MAX_ENERGY);
   state.players.p2.energy = Math.min(state.round, MAX_ENERGY);
   state.activePlayer = state.attackToken;

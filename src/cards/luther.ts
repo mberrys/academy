@@ -1,0 +1,55 @@
+import type { CardDef } from '../engine/types';
+
+export const LUTHER_CARDS: CardDef[] = [
+  {
+    id: 'ninety-five-theses',
+    name: 'Ninety-Five Theses',
+    type: 'argument',
+    cost: 3,
+    text: 'Summon two Congregants.',
+    effects: [{ trigger: 'onPlay', effect: 'summonTwoCongregants' }],
+  },
+  {
+    id: 'indulgence',
+    name: 'Indulgence',
+    type: 'argument',
+    cost: 2,
+    text: 'Gain 3 energy this round. Your nexus takes 2 damage.',
+    effects: [{ trigger: 'onPlay', effect: 'indulgence' }],
+  },
+  {
+    id: 'reformation',
+    name: 'Reformation',
+    type: 'thinker',
+    cost: 3,
+    attack: 2,
+    health: 3,
+    text: 'When I am played, summon a Congregant.',
+    effects: [{ trigger: 'onPlay', effect: 'summonOneCongregant' }],
+  },
+  {
+    id: 'sola-fide',
+    name: 'Sola Fide',
+    type: 'argument',
+    cost: 2,
+    text: 'Give a unit +1/+2 this round and Barrier.',
+    target: { kind: 'unit' },
+    effects: [{ trigger: 'onPlay', effect: 'solaFide' }],
+  },
+  {
+    id: 'congregation',
+    name: 'Congregation',
+    type: 'argument',
+    cost: 4,
+    text: 'Give your Congregants +2/+2 permanently.',
+    effects: [{ trigger: 'onPlay', effect: 'congregation' }],
+  },
+  {
+    id: 'here-i-stand',
+    name: 'Here I Stand',
+    type: 'argument',
+    cost: 5,
+    text: 'Give your units +2/+2 permanently and Overwhelm this round.',
+    effects: [{ trigger: 'onPlay', effect: 'hereIStand' }],
+  },
+];

@@ -1,0 +1,60 @@
+export type ChampionId = 'marx' | 'lacan' | 'luther';
+
+function copies(id: string, count: number): string[] {
+  return Array.from({ length: count }, () => id);
+}
+
+export const DECKS: Record<ChampionId, string[]> = {
+  marx: [
+    ...copies('marx', 3),
+    'historical-materialism',
+    'stoicism',
+    ...copies('dialectic', 3),
+    ...copies('alienation', 3),
+    ...copies('proletariat', 3),
+    ...copies('capital', 3),
+    ...copies('class-struggle', 3),
+    ...copies('manifesto', 3),
+    ...copies('rebuttal', 3),
+    ...copies('refutation', 3),
+    ...copies('burden-of-proof', 3),
+    ...copies('archivist', 3),
+    ...copies('bulwark', 3),
+    ...copies('repeal', 2),
+  ],
+  lacan: [
+    ...copies('lacan', 3),
+    'psychoanalysis',
+    'empiricism',
+    ...copies('mirror-stage', 3),
+    ...copies('repression', 3),
+    ...copies('signifier', 3),
+    ...copies('objet-a', 3),
+    ...copies('name-of-the-father', 3),
+    ...copies('primal-scene', 3),
+    ...copies('rebuttal', 3),
+    ...copies('citation', 3),
+    ...copies('rhetoric', 3),
+    ...copies('polemicist', 3),
+    ...copies('orator', 3),
+    ...copies('repeal', 2),
+  ],
+  luther: [
+    ...copies('luther', 3),
+    'reformation-theology',
+    'existentialism',
+    ...copies('ninety-five-theses', 3),
+    ...copies('indulgence', 3),
+    ...copies('reformation', 3),
+    ...copies('sola-fide', 3),
+    ...copies('congregation', 3),
+    ...copies('here-i-stand', 3),
+    ...copies('rebuttal', 3),
+    ...copies('refutation', 3),
+    ...copies('student', 3),
+    ...copies('lecturer', 3),
+    ...copies('archivist', 2),
+    'orator',
+    ...copies('repeal', 2),
+  ],
+};
