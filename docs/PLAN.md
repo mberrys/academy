@@ -179,7 +179,7 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 **Deliverables.**
 
-- [ ] Sketch three visual directions as static HTML in `docs/sketches/`. Each sketch shows the match screen with the same board state.
+- [x] Sketch three visual directions as static HTML in `docs/sketches/`. Each sketch shows the match screen with the same board state. Files at `docs/sketches/a-reading-room.html`, `docs/sketches/b-seminar.html`, and `docs/sketches/c-marginalia.html`.
 - [ ] Apply the chosen direction as design tokens in `src/ui/tokens.css`.
 - [ ] Create `src/ui/App.tsx` with the champion select, match, and result screens.
 - [ ] Create `src/ui/Board.tsx`, `Row.tsx`, `Slot.tsx`, `BackZone.tsx`, `Hand.tsx`, `Card.tsx`, `CombatOverlay.tsx`, `Log.tsx`, and `Result.tsx`.
