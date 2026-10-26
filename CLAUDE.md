@@ -6,22 +6,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Academy is a digital card game about philosophy. Cards represent ideas, arguments, and schools of thought, and gameplay comes from how they combine with and clash against each other.
 
-The project is not scaffolded yet. Once the code exists, replace the planned parts below with the real commands and structure.
+The scaffold is in place. AC-01 of 07 is complete.
 
-## Planned stack
+## Stack
 
-- TypeScript (strict mode), running in the browser
+- TypeScript in strict mode, running in the browser
 - React for the UI, built with Vite
 - Vitest for tests
 
-Expected commands once scaffolded:
+## Commands
 
 - `npm install`
-- `npm run dev`: start the dev server
+- `npm run dev`: start the dev server at http://localhost:5173
 - `npm run build`: type-check and build for production
 - `npm test`: run all tests
+- `npm run typecheck`: check types without emitting
 - `npx vitest run path/to/file.test.ts`: run a single test file
 - `npx vitest run -t "test name"`: run tests whose name matches
+- `npm run sim`: headless game harness, a stub until AC-02
+- `npm run selfplay`: AI harness, a stub until AC-05
+- `npm run docs:check`: documentation check, a stub until AC-07
+
+## Layout
+
+- `src/engine`: the pure rules engine. No React or DOM imports.
+- `src/ui`: the React app.
+- `src/cards`: card data and decklists, added in AC-04.
+- `src/ai`: the bot, added in AC-05.
+- `scripts`: the headless harnesses.
+- `docs/PLAN.md`: the milestone plan.
+- `docs/evidence`: screenshots and logs.
+- `reviews`: adversarial review reports.
 
 ## Architecture intent
 
