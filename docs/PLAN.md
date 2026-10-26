@@ -175,6 +175,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build the UI and settle the visual direction (AC-06)
 
+**State.** Branch `ac-06-ui` at `be6f136`. Evidence at `docs/evidence/ac-06-01-select.png` through `ac-06-10-choose.png`, `docs/evidence/ac-06-keyboard.png`, and `docs/evidence/ac-06-walkthrough.mp4`. 90 tests. FCP 468 ms. AI render 11.3 ms. Console clean.
+
 **Entry gate.** AC-05 is merged. A bot can play a full game through the engine.
 
 **Deliverables.**
