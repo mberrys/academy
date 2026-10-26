@@ -200,7 +200,7 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 - [ ] Rewrite `README.md` as a how-to for install, dev, test, and a first game.
 - [ ] Create `docs/design/game-design.md` as the explanation of the pillars, the champions, and the shape of a match.
 - [ ] Create `docs/design/rules.md` as the reference for the turn frame, timing, combat, keywords, zones, and win conditions.
-- [ ] Create `docs/design/cards.md` as the generated catalog for all 36 cards and 2 tokens.
+- [ ] Create `docs/design/cards.md` as the generated catalog for all 40 cards and 2 tokens.
 - [ ] Create `docs/architecture.md` with the module map, the state shape, the action and event flow, the RNG, the AI, and the test layout.
 - [ ] Create `docs/card-authoring.md` as the how-to for adding a card, an effect, and a test.
 - [ ] Create `docs/contributing.md` with setup, scripts, conventions, and the definition of done.
