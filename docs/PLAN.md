@@ -93,6 +93,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build combat and keywords (AC-03)
 
+**State.** Branch `ac-03-combat` at `f795152`. Evidence, 39 tests, combat log `p2_health=18 quick_damage=0`, p95 `0.234 ms`.
+
 **Entry gate.** AC-02 is merged with a green suite.
 
 **Deliverables.**
