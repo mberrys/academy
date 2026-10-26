@@ -1,6 +1,6 @@
 # Card text review, 2026-10-25
 
-Scope. Appendix E of `docs/PLAN.md`, the 36 deckable cards and 2 tokens for the v1 set.
+Scope. Appendix E of `docs/PLAN.md`. The set as reviewed held 36 deckable cards and 2 tokens. A follow-up closed the three deferred findings and brought the pool to 40 deckable cards.
 
 Method. Four reviewers ran on the same model, `deepseek-v4.1-flash`, from four entry points because model diversity was unavailable. Reviewer A started at the rules and edge cases. Reviewer B started at the numbers and deck construction. Reviewer C started at the engine and the effect registry. Reviewer D started at a cold read of the text. They returned 40 raw findings. Consensus in this report means independently reached from different entry points, not cross-model agreement. The table records every finding that survived verification.
 
@@ -36,13 +36,13 @@ Method. Four reviewers ran on the same model, `deepseek-v4.1-flash`, from four e
 | P1-9 | Name of the Father killed low-attack units, which inverts the idea of the symbolic law. | D10 | Destroy a unit with 3 or more attack. |
 | P1-10 | Every deck ran three School cards that could never be played, because a player may control one copy of a School. | A7, B9 | One copy of each School. Decklists refilled to 40 with playable cards. |
 
-## P2, deferred
+## P2, fixed in the follow-up
 
-| Id | Finding | Reviewers | Reason |
+| Id | Finding | Reviewers | Fix |
 | --- | --- | --- | --- |
-| P2-1 | The curve tops at 4 energy, so 5 to 10 energy buys no new card and card draw becomes the only late resource. | B10 | Deferred to v1.1. Adding two or three payoffs changes the set count, the decklists, and the balance review. It needs its own pass. |
-| P2-2 | Schools have no health and no card can remove one. | A7 | Deliberate for v1. The decklist fix removes the dead cards, and a removable School adds a combat target the set does not need yet. |
-| P2-3 | The second player has no compensation. | None | Not raised by the reviewers. The self-play harness in AC-05 measures the first player win rate and AC-C already names the follow-up. |
+| P2-1 | The curve tops at 4 energy, so 5 to 10 energy buys no new card and card draw becomes the only late resource. | B10 | Added Manifesto at 6, Primal Scene at 6, and Here I Stand at 5, one per faction, with 3 copies in each deck. |
+| P2-2 | Schools have no health and no card can remove one. | A7 | Added Repeal at 3, a neutral Argument that destroys an enemy School. Each deck runs 2. Schools stay out of combat, which is the smaller fix. |
+| P2-3 | The second player has no compensation. | None | The first player draws 4 and the second draws 5. Appendix F rule 16. |
 
 ## P3, noted
 
@@ -50,7 +50,7 @@ Naming and wording nits that the new rules text resolves. No separate action. Th
 
 ## Dismissed
 
-- **Give Schools health and removal** (A7). Rejected for v1. It adds a combat target, a removal package, and a new interaction layer to a set whose first job is to prove the champion engines. The dead-card problem had a cheaper fix.
+- **Give Schools health and removal** (A7). Rejected the health half. Repeal adds the removal half without giving Schools a combat profile, which would add a new target layer to a set whose first job is to prove the champion engines.
 - **Make Time Bomb hit only units** (B1, implicit). Rejected. The 2 damage face clause is Marx's control win condition. At 2 energy it is priced as a real play rather than a free clock.
 
 ## Agreement map
@@ -61,5 +61,12 @@ Time Bomb and Luther's token geometry were flagged by all four reviewers. Champi
 
 - `python C:/Users/micha/AppData/Local/hermes/skills/poteto-mode/scripts/check-plan.py docs/PLAN.md` prints 0 findings.
 - The deck legality check reports three decks, 40 cards each, 14 distinct cards, 3 champion copies, no card above 3 copies, and no unknown names.
-- The card table has 41 rows. 36 are deckable, 3 are level 2 forms, and 2 are tokens.
-- The review fixed 15 findings and deferred 3. No finding was dismissed as wrong. The two rejections above are scope decisions, not factual disputes.
+- The card table has 41 rows at the review commit. 36 are deckable, 3 are level 2 forms, and 2 are tokens.
+- The review fixed 15 findings and deferred 3 at the first commit.
+
+## Follow-up verification
+
+- The plan checker prints 0 findings.
+- The deck check reports three decks at 40 cards, 14 to 15 distinct cards, 3 champion copies, no card above 3 copies, and no unknown names.
+- The card table has 45 rows. 40 are deckable, 3 are level 2 forms, and 2 are tokens.
+- All 18 findings are fixed and none are deferred. The two rejected items above remain scope decisions, not factual disputes.

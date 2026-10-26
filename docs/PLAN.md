@@ -1,7 +1,7 @@
 # Academy scaffold plan
 
 Academy is a two-player card game about philosophy. This plan builds a playable vertical slice against a computer opponent, plus the documentation a new contributor needs.
-Three champions, 36 deckable cards, two tokens, a pure TypeScript engine, a React UI, and six documents plus a README.
+Three champions, 40 deckable cards, two tokens, a pure TypeScript engine, a React UI, and six documents plus a README.
 The rule the build enforces is that the engine is a pure function of state and action, so every rule is testable and every game is replayable.
 The work runs as seven milestones, AC-01 to AC-07.
 
@@ -68,7 +68,7 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 **Deliverables.**
 
-- [ ] Create `src/engine/types.ts` with `GameState`, `PlayerState`, `CardInstance`, `CardDef`, `Action`, `GameEvent`, `PlayerId`, and the zone types.
+- [ ] Create `src/engine/types.ts` with `GameState`, `PlayerState`, `CardInstance`, `CardDef`, `Action`, `GameEvent`, `PlayerId`, and the zone types. `PlayerState` records `playedThisRound`, the ordered list of cards that player has played this round.
 - [ ] Create `src/engine/rng.ts` with a mulberry32 generator whose state lives in `GameState`.
 - [ ] Create `src/engine/setup.ts` with `createGame(seed, decks, champions)`.
 - [ ] Create `src/engine/actions.ts` with `applyAction(state, action)` for `MULLIGAN`, `PLAY_CARD`, and `PASS`.
@@ -79,7 +79,7 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 **Verify, unit and perf.** Tests alone are not sufficient verification. A milestone is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `src/engine/turn.test.ts` covers opening hands of 4, one mulligan only, energy 1 through 10, the 3 point spell mana cap, unspent energy loss, pass then pass ending the round, one draw per round, the attack token flip, the 10 card hand limit, deck out as a loss, and round 20 as a draw.
+- [ ] `src/engine/turn.test.ts` covers opening hands of 4 for the first player and 5 for the second, one mulligan only, energy 1 through 10, the 3 point spell mana cap, unspent energy loss, pass then pass ending the round, one draw per round, the attack token flip, the 10 card hand limit, deck out as a loss, and round 20 as a draw.
 - [ ] `src/engine/replay.test.ts` applies one recorded action list twice from the same seed and asserts identical state hashes.
 - [ ] `src/engine/legality.test.ts` asserts an illegal action returns a typed rejection and never mutates state.
 - [ ] Live. `npm run sim -- --seed 1 --rounds 20` prints a round by round log and a terminal result. Paste the last five lines into the milestone `State` line.
@@ -114,8 +114,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 **Deliverables.**
 
-- [ ] Create `src/engine/effects.ts` with the effect registry and handlers for damage, heal, buff, draw, summon, return to hand, destroy, gain energy, cost reduction, copy, create a card in hand, clone a unit, and delayed effect.
-- [ ] Create `src/engine/auras.ts` with source-keyed static modifiers for the School effects, Existentialism, and the Luther level 2 aura. Recompute them when stats or costs are read, and drop them when the source leaves play.
+- [ ] Create `src/engine/effects.ts` with the effect registry and handlers for damage, heal, buff, grant a keyword, draw, summon, return to hand, destroy, gain energy, cost reduction, copy, create a card in hand, clone a unit, and delayed effect. Target scopes cover a single unit, all enemy units, all allied units, the nexus, and a School.
+- [ ] Create `src/engine/auras.ts` with source-keyed static modifiers for the School effects, Existentialism, the Luther level 2 aura, and the Marx level 2 bomb modifier. Recompute them when stats or costs are read, and drop them when the source leaves play.
 - [ ] Create `src/engine/cost.ts` with `costOf(state, player, instance)`. It applies the floor at 0 and serves legality, the UI, and the AI.
 - [ ] Create `src/engine/placement.ts` with the leftmost empty slot rule and partial summons.
 - [ ] Create `src/engine/triggers.ts` with the trigger bus, the ordering rule, the after condition, and the earlier this round condition.
@@ -128,7 +128,7 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 **Verify, unit and perf.** Tests alone are not sufficient verification. A milestone is verified only when its unit, live, and perf boxes are all checked.
 
 - [ ] `src/cards/cards.test.ts` asserts unique ids, valid effect references, a cost and stats on every deckable card, and a legal deck for each champion. Legal means exactly 40 cards, at most 3 copies, 3 champion copies, and one copy of each School.
-- [ ] `src/engine/effects.test.ts` covers every handler at least once.
+- [ ] `src/engine/effects.test.ts` covers every handler at least once, including all enemy and all allied scopes, a School target, a keyword grant, and a copy of each Argument played this round.
 - [ ] `src/engine/triggers.test.ts` covers active player first ordering, the after and earlier this round conditions, one trigger per event, and no infinite loop on a copied trigger.
 - [ ] `src/engine/rules.test.ts` covers the Appendix F rules. Unit membership, one champion per player, play versus summon, placement and partial summons, entering play, target legality, hand overflow, the cost floor, static bonuses, transform timing, and the strongest and weakest tiebreaks.
 - [ ] `src/engine/champions.test.ts` levels each champion through its condition and asserts the complete level two text and stats. Marx resolves three Time Bombs. Lacan plays three copied cards. Luther summons six followers.
@@ -242,7 +242,7 @@ The turn frame, the board shape, the combat model, and the champion kits were se
 - **Trigger ordering bugs.** Chained triggers are the likeliest source of wrong outcomes. It lands in AC-04. The ordering rule is written in `docs/design/rules.md` and tested in `triggers.test.ts`. Any card that needs a new ordering rule gets cut from v1.
 - **A weak AI.** The bot can be legal and still unfun. It lands in AC-05. The self play win rate against the random baseline is the gate, and a 55 to 95 percent band catches both a broken bot and a pushover.
 - **Positional clarity in the UI.** Adjacency is the hardest rule to show. It lands in AC-06. The combat overlay must draw the adjacency lines and name the eligible interceptors before the defender picks.
-- **Second player disadvantage.** Both players draw 4 and the first player holds the attack token. It lands in AC-01 and AC-05. The self play harness measures the first player win rate. If it exceeds 60 percent, add one extra card to the second player's opening hand as a follow-up.
+- **Second player disadvantage.** The first player draws 4 and the second draws 5, and the first player holds the attack token. It lands in AC-01 and AC-05. The self play harness measures the first player win rate. If it exceeds 60 percent, give the second player 1 extra energy on their first turn as a follow-up.
 - **Docs drift.** The card catalog is generated, and `docs:check` fails on a mismatch. The rules reference is the one hand written doc that can drift. AC-07 verifies it against a recorded log.
 - **The 20 round cap hides slow decks.** A control deck may draw every game. It lands in AC-04. The self play harness reports draws. If draws exceed 20 percent of games, lower the starting health or raise the energy curve in a follow-up.
 
@@ -262,14 +262,14 @@ The turn frame, the board shape, the combat model, and the champion kits were se
 
 The table proposes the v1 set. Costs are energy. Stats are attack and health. Text is the printed text. The Deck column marks the signature cards, C for champion, S for school, N for neutral, T for token.
 
-The set has 36 deckable cards and 2 tokens. The six champion rows are three cards and their level 2 forms. A level 2 form is a complete replacement, not a deck card. A deck holds 3 copies of its champion's level 1 card.
+The set has 40 deckable cards and 2 tokens. The six champion rows are three cards and their level 2 forms. A level 2 form is a complete replacement, not a deck card. A deck holds 3 copies of its champion's level 1 card.
 
 | Id | Name | Type | Cost | Stats | Text | Deck |
 | --- | --- | --- | --- | --- | --- | --- |
 | marx | Karl Marx | Champion | 3 | 2/4 | When I am played and at the start of your turn, create a Time Bomb in your hand. | C |
 | marx-2 | Karl Marx, level 2 | Champion | 3 | 4/5 | When I am played and at the start of your turn, create a Time Bomb in your hand. Time Bombs cost 1 and deal 2 more damage. | C |
 | lacan | Jacques Lacan | Champion | 2 | 1/4 | The first time each round you play an Argument after a Thinker, create a copy of it in your hand. The copy costs 1 more. | C |
-| lacan-2 | Jacques Lacan, level 2 | Champion | 2 | 3/5 | The first time each round you play an Argument after a Thinker, create a copy of it in your hand. Copies cost 1. When you play a copy, deal 1 damage to the enemy nexus. | C |
+| lacan-2 | Jacques Lacan, level 2 | Champion | 2 | 3/5 | The first time each round you play an Argument after a Thinker, create a copy of it in your hand. Copies you create cost 1. When you play a copy, deal 1 damage to the enemy nexus. | C |
 | luther | Martin Luther | Champion | 3 | 1/5 | When I attack, summon two 1/1 Congregants in empty slots. | C |
 | luther-2 | Martin Luther, level 2 | Champion | 3 | 2/6 | When I attack, summon three Congregants in empty slots. Your Congregants have +1/+1. | C |
 | historical-materialism | Historical Materialism | School | 2 | | When one of your units dies, your next Argument this round costs 1 less. This does not stack. | S |
@@ -283,16 +283,19 @@ The set has 36 deckable cards and 2 tokens. The six champion rows are three card
 | proletariat | Proletariat | Thinker | 2 | 2/2 | When I am played, if you control another Thinker, give me +1/+1 permanently. | M |
 | capital | Capital | Thinker | 4 | 3/4 | When I am played, gain 1 energy this round. | M |
 | class-struggle | Class Struggle | Argument | 3 | | Destroy your weakest non-champion unit. If you do, deal damage equal to its current attack to an enemy unit you choose. | M |
+| manifesto | Manifesto | Argument | 6 | | Deal 3 damage to all enemy units. Create a Time Bomb in your hand. | M |
 | mirror-stage | Mirror Stage | Argument | 2 | | Summon a copy of an allied non-champion unit. The copy has 1 health and its printed stats and keywords. | L |
 | repression | Repression | Argument | 3 | | Return an enemy unit to its owner's hand. It costs 1 more until the end of the round. | L |
 | signifier | Signifier | Thinker | 2 | 1/3 | When you play an Argument after a Thinker, give me +1/+1 permanently. | L |
 | objet-a | Objet Petit a | Thinker | 2 | 1/1 | When I die, draw 1. | L |
 | name-of-the-father | Name of the Father | Argument | 4 | | Destroy a unit with 3 or more attack. | L |
+| primal-scene | Primal Scene | Argument | 6 | | Create a copy of each other Argument you played this round in your hand. Draw 1. | L |
 | ninety-five-theses | Ninety-Five Theses | Argument | 3 | | Summon two Congregants. | U |
 | indulgence | Indulgence | Argument | 2 | | Gain 3 energy this round. Your nexus takes 2 damage. | U |
 | reformation | Reformation | Thinker | 3 | 2/3 | When I am played, summon a Congregant. | U |
 | sola-fide | Sola Fide | Argument | 2 | | Give a unit +1/+2 this round and Barrier. | U |
 | congregation | Congregation | Argument | 4 | | Give your Congregants +2/+2 permanently. | U |
+| here-i-stand | Here I Stand | Argument | 5 | | Give your units +2/+2 permanently and Overwhelm this round. | U |
 | student | The Student | Thinker | 1 | 1/1 | When I die, draw 1. | N |
 | lecturer | The Lecturer | Thinker | 2 | 2/2 | | N |
 | archivist | The Archivist | Thinker | 3 | 2/3 | When I am played, draw 1. | N |
@@ -305,6 +308,7 @@ The set has 36 deckable cards and 2 tokens. The six champion rows are three card
 | rhetoric | Rhetoric | Argument | 2 | | Give a unit +2/+0 this round and Overwhelm. | N |
 | burden-of-proof | Burden of Proof | Argument | 3 | | Give a unit -2/+0 this round. | N |
 | riposte | Riposte | Argument | 1 | | Give a unit Barrier. | N |
+| repeal | Repeal | Argument | 3 | | Destroy an enemy School. | N |
 | time-bomb | Time Bomb | Argument | 2 | | When you play me, at the start of your next turn, deal 4 damage to the strongest enemy unit. If the enemy controls no units, deal 2 damage to the enemy nexus. | T |
 | congregant | Congregant | Token | | 1/1 | | T |
 
@@ -320,9 +324,9 @@ Time Bomb is a token Argument. It is not in a deck. Congregant is a token unit. 
 
 Each deck is exactly 40 cards with at most 3 copies of a card and one copy of each School.
 
-- **Marx.** 3 Karl Marx, 1 Historical Materialism, 1 Stoicism, 3 Dialectic, 3 Alienation, 3 Proletariat, 3 Capital, 3 Class Struggle, 3 Rebuttal, 3 Refutation, 3 Burden of Proof, 3 The Archivist, 3 The Bulwark, 2 The Student, 2 Riposte, 1 The Orator.
-- **Lacan.** 3 Jacques Lacan, 1 Psychoanalysis, 1 Empiricism, 3 Mirror Stage, 3 Repression, 3 Signifier, 3 Objet Petit a, 3 Name of the Father, 3 Rebuttal, 3 Citation, 3 Rhetoric, 3 The Polemicist, 3 The Orator, 2 The Student, 2 Riposte, 1 The Lecturer.
-- **Luther.** 3 Martin Luther, 1 Reformation Theology, 1 Existentialism, 3 Ninety-Five Theses, 3 Indulgence, 3 Reformation, 3 Sola Fide, 3 Congregation, 3 Rebuttal, 3 Riposte, 3 Refutation, 3 The Student, 3 The Lecturer, 2 The Archivist, 3 The Orator.
+- **Marx.** 3 Karl Marx, 1 Historical Materialism, 1 Stoicism, 3 Dialectic, 3 Alienation, 3 Proletariat, 3 Capital, 3 Class Struggle, 3 Manifesto, 3 Rebuttal, 3 Refutation, 3 Burden of Proof, 3 The Archivist, 3 The Bulwark, 2 Repeal.
+- **Lacan.** 3 Jacques Lacan, 1 Psychoanalysis, 1 Empiricism, 3 Mirror Stage, 3 Repression, 3 Signifier, 3 Objet Petit a, 3 Name of the Father, 3 Primal Scene, 3 Rebuttal, 3 Citation, 3 Rhetoric, 3 The Polemicist, 3 The Orator, 2 Repeal.
+- **Luther.** 3 Martin Luther, 1 Reformation Theology, 1 Existentialism, 3 Ninety-Five Theses, 3 Indulgence, 3 Reformation, 3 Sola Fide, 3 Congregation, 3 Here I Stand, 3 Rebuttal, 3 Refutation, 3 The Student, 3 The Lecturer, 2 The Archivist, 1 The Orator, 2 Repeal.
 
 ## Appendix F. Rules decisions from the card review
 
@@ -344,3 +348,5 @@ The card texts assume these rules. They are normative for the engine and the rul
     The transform does not trigger on-play or on-summon abilities. Progress persists per player. A champion replayed after death enters at level 1 and transforms at the start of your next turn if the stored progress still meets the condition.
 13. **Keywords.** Barrier prevents the next damage the unit would take, then is removed. Tough reduces each incoming damage instance by 1. Overwhelm sends excess combat damage to the nexus. Quick Attack strikes first and takes no retaliation if the defender dies. Challenger, on play, pulls an enemy unit into an empty slot adjacent to the challenger.
 14. **Nexus health.** Nexus health cannot exceed 20. Round 20 ends in a draw. Drawing from an empty deck loses.
+15. **Schools.** A player may control one copy of a School. A destroyed School leaves its slot empty.
+16. **Opening hands.** The first player draws 4 cards. The second player draws 5. Each player may mulligan once.
