@@ -348,5 +348,5 @@ The card texts assume these rules. They are normative for the engine and the rul
     The transform does not trigger on-play or on-summon abilities. Progress persists per player. A champion replayed after death enters at level 1 and transforms at the start of your next turn if the stored progress still meets the condition.
 13. **Keywords.** Barrier prevents the next damage the unit would take, then is removed. Tough reduces each incoming damage instance by 1. Overwhelm sends excess combat damage to the nexus. Quick Attack strikes first and takes no retaliation if the defender dies. Challenger, on play, pulls an enemy unit into an empty slot adjacent to the challenger.
 14. **Nexus health.** Nexus health cannot exceed 20. Round 20 ends in a draw. Drawing from an empty deck loses.
-15. **Schools.** A player may control one copy of a School. A destroyed School leaves its slot empty.
+15. **Schools.** A player may control one copy of a School. A School has no health and cannot be attacked. A destroyed School leaves its slot empty.
 16. **Opening hands.** The first player draws 4 cards. The second player draws 5. Each player may mulligan once.
