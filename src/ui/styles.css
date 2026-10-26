@@ -1,0 +1,44 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  background: #faf9f6;
+  color: #1c1917;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  min-height: 100vh;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.status {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
