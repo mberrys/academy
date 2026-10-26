@@ -116,6 +116,8 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build the card system and the card set (AC-04)
 
+**State.** Merged at `406862e`. Evidence at `docs/evidence/ac-04-marx.log`, `docs/evidence/ac-04-lacan.log`, `docs/evidence/ac-04-luther.log`, and `docs/evidence/ac-04-perf.log`. 87 tests. Scripted game 25.71 ms. 1,000 games with 0 crashes.
+
 **Entry gate.** AC-03 is merged. Combat tests are green.
 
 **Deliverables.**
@@ -140,13 +142,13 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 - [x] `src/engine/champions.test.ts` levels each champion through its condition and asserts the complete level two text and stats. Marx resolves three Time Bombs. Lacan plays three copied cards. Luther summons six followers.
 - [x] Live. `npm run sim -- --seed 5 --champion marx` reaches a terminal state and logs the level up. Repeat for `lacan` and `luther`. Logs at `docs/evidence/ac-04-marx.log`, `docs/evidence/ac-04-lacan.log`, and `docs/evidence/ac-04-luther.log`.
 - [x] Perf. A scripted full game resolves in under 200 ms. 1,000 seeded games run without a crash. Scripted game 25.71 ms. 1,000 games, 0 crashes, 0 unfinished, 320 p1 wins, 373 p2 wins, 307 draws. Log at `docs/evidence/ac-04-perf.log`. The 30.7 percent draw rate under a random policy is a risk recorded for AC-05.
-- [ ] Review. The card table in Appendix E and the three champion kits are the design review artifact.
+- [x] Review. The card table in Appendix E and the three champion kits are the design review artifact.
 
 **Review gate.** The operator reviews the card table, the champion kits, and the decklists before merge. AC-04 is review-gated.
 
-- [ ] Post the Appendix E table and the three level conditions in chat.
-- [ ] Wait for the operator's approval or corrections.
-- [ ] Apply corrections as one follow-up commit on the same branch.
+- [x] Post the Appendix E table and the three level conditions in chat.
+- [x] Wait for the operator's approval or corrections.
+- [x] Apply corrections as one follow-up commit on the same branch. No corrections were requested.
 
 ## Build the AI opponent (AC-05)
 
