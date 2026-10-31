@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { adjacentSlots } from '../engine/zones';
 import type { ActionError, CardInstance, GameState, InterceptorAssignment } from '../engine/types';
 
@@ -12,10 +12,35 @@ export function CombatOverlay({ state, onConfirm, error }: CombatOverlayProps) {
   const combat = state.combat;
   const [blocks, setBlocks] = useState<Record<string, string>>({});
   const firstRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     firstRef.current?.focus();
+    return () => previous?.focus();
   }, []);
+
+  // Keep Tab and Shift+Tab inside the dialog so focus cannot reach the background.
+  const trapFocus = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab' || !panelRef.current) {
+      return;
+    }
+    const focusable = Array.from(panelRef.current.querySelectorAll<HTMLElement>('button:not(:disabled)'));
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) {
+      return;
+    }
+    const active = document.activeElement;
+    const outside = !(active instanceof Node) || !panelRef.current.contains(active);
+    if (event.shiftKey && (active === first || outside)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || outside)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   if (!combat) {
     return null;
@@ -36,8 +61,8 @@ export function CombatOverlay({ state, onConfirm, error }: CombatOverlayProps) {
   };
 
   return (
-    <div className="overlay" role="dialog" aria-modal="true" aria-label="Combat">
-      <div className="overlay-panel">
+    <div className="overlay" role="dialog" aria-modal="true" aria-label="Combat" onKeyDown={trapFocus}>
+      <div className="overlay-panel" ref={panelRef}>
         <h2 className="overlay-title">Combat</h2>
         <p className="overlay-lede">
           Assign a blocker to an attacker, or take the damage. Only adjacent allies can block.
