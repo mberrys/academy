@@ -439,6 +439,7 @@ export function MatchScreen({ state, onAction, error }: MatchScreenProps) {
         <CombatOverlay
           state={state}
           onConfirm={(interceptors) => onAction({ type: 'ASSIGN_INTERCEPTORS', player: 'p1', interceptors })}
+          error={error}
         />
       )}
     </>

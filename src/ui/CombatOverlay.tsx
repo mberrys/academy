@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { adjacentSlots } from '../engine/zones';
-import type { CardInstance, GameState, InterceptorAssignment } from '../engine/types';
+import type { ActionError, CardInstance, GameState, InterceptorAssignment } from '../engine/types';
 
 type CombatOverlayProps = {
   state: GameState;
   onConfirm: (interceptors: InterceptorAssignment[]) => void;
+  error: ActionError | null;
 };
 
-export function CombatOverlay({ state, onConfirm }: CombatOverlayProps) {
+export function CombatOverlay({ state, onConfirm, error }: CombatOverlayProps) {
   const combat = state.combat;
   const [blocks, setBlocks] = useState<Record<string, string>>({});
   const firstRef = useRef<HTMLButtonElement>(null);
@@ -19,6 +20,13 @@ export function CombatOverlay({ state, onConfirm }: CombatOverlayProps) {
   if (!combat) {
     return null;
   }
+
+  // A blocker can intercept only one attacker, so chips used by another attacker are disabled.
+  const blockerClaims = new Map(
+    Object.entries(blocks)
+      .filter(([, blockerId]) => blockerId)
+      .map(([attackerId, blockerId]) => [blockerId, attackerId]),
+  );
 
   const submit = () => {
     const interceptors = Object.entries(blocks)
@@ -69,10 +77,13 @@ export function CombatOverlay({ state, onConfirm }: CombatOverlayProps) {
                 </button>
                 {blockers.map((blocker) => {
                   const name = state.catalog[blocker.defId]?.name ?? 'Ally';
+                  const claimedByOther = blockerClaims.has(blocker.instanceId)
+                    && blockerClaims.get(blocker.instanceId) !== assignment.attackerId;
                   return (
                     <button
                       key={blocker.instanceId}
                       type="button"
+                      disabled={claimedByOther}
                       className={`blocker-chip ${blocks[assignment.attackerId] === blocker.instanceId ? 'is-selected' : ''}`}
                       onClick={() => setBlocks((previous) => ({ ...previous, [assignment.attackerId]: blocker.instanceId }))}
                     >
@@ -87,6 +98,8 @@ export function CombatOverlay({ state, onConfirm }: CombatOverlayProps) {
             </div>
           );
         })}
+
+        {error && <div className="error-note" role="alert">That block was rejected: {error}.</div>}
 
         <div className="overlay-actions">
           <button type="button" className="btn btn-primary" onClick={submit}>
