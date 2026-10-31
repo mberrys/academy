@@ -1,0 +1,7 @@
+First contentful paint: 468 ms.
+Measured on the active tab at http://localhost:5173/?perf=2 with performance.getEntriesByType('paint').
+The tab was brought to the front first. A background tab reports 1844 ms, so that number is not used.
+
+AI render: 9.2 ms and 11.3 ms.
+Measured with performance.measure('ai-render') around the AI action and the next animation frame.
+Two AI actions were measured after one human pass.

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Academy sketch C, Marginalia</title>
+<style>
+  :root {
+    --cream: #f7f1e3;
+    --page: #fffaf0;
+    --ink: #211c18;
+    --muted: #7e715f;
+    --rule: #d8c9ae;
+    --indigo: #2f3a6b;
+    --rust: #b1543a;
+    --green: #4a6b4a;
+    --gold: #a67c2e;
+    --blue: #4f6b8a;
+    --shadow: rgba(90, 68, 40, 0.16);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at 80% 0%, #fffaf0 0%, transparent 45%),
+      repeating-linear-gradient(90deg, rgba(120, 96, 60, 0.025) 0 1px, transparent 1px 3px),
+      var(--cream);
+    color: var(--ink);
+    font-family: Baskerville, "Libre Baskerville", "Iowan Old Style", Georgia, serif;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+  .page { width: 1180px; margin: 0 auto; padding: 26px 30px 26px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+  .wordmark { font-size: 34px; font-weight: 600; letter-spacing: 0.02em; line-height: 1; }
+  .wordmark em { color: var(--rust); font-style: italic; }
+  .sub { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+  .meta { display: flex; gap: 10px; align-items: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .meta .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rust); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 26px; padding-top: 16px; }
+  .main { min-width: 0; }
+  .strip { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; }
+  .who { display: flex; align-items: baseline; gap: 10px; }
+  .who h2 { font-size: 17px; margin: 0; font-weight: 600; }
+  .who .role { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+  .nexus { font-size: 22px; font-weight: 600; color: var(--indigo); }
+  .nexus small { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-left: 3px; }
+  .tally { display: flex; gap: 3px; align-items: center; }
+  .tally i { display: block; width: 3px; height: 13px; background: var(--indigo); }
+  .tally i.spell { background: var(--blue); }
+  .tally i.off { background: var(--rule); }
+  .back { display: flex; align-items: center; gap: 8px; padding: 5px 0 5px 12px; border-left: 3px solid var(--green); font-size: 12px; }
+  .back .tag { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green); }
+  .row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 9px; padding: 10px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .slot { min-height: 198px; position: relative; padding: 4px; }
+  .slot .no { position: absolute; bottom: -15px; left: 2px; font-size: 9px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+  .slot.empty { display: grid; place-items: center; border: 1px dashed var(--rule); color: var(--muted); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .card { height: 100%; display: flex; flex-direction: column; background: var(--page); border: 1px solid var(--rule); border-top: 4px solid var(--blue); padding: 9px 10px 8px; box-shadow: 3px 4px 0 var(--shadow); position: relative; }
+  .card.champion { border-top-color: var(--gold); }
+  .card.argument { border-top-color: var(--rust); }
+  .card.school-card { border-top-color: var(--green); }
+  .card.opponent { background: #f3e8d3; }
+  .card:focus-visible, .margin a:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .card .type { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .card .name { font-size: 14px; margin: 4px 0 2px; font-weight: 600; line-height: 1.15; }
+  .card .cost { position: absolute; top: 6px; right: 7px; width: 27px; height: 27px; border: 1.5px solid var(--rust); border-radius: 48% 52% 46% 54%; display: grid; place-items: center; font-size: 13px; color: var(--rust); transform: rotate(-4deg); background: var(--page); }
+  .card .text { font-size: 10.5px; font-style: italic; line-height: 1.32; color: #4b4033; margin: 5px 0 0; }
+  .card .note { font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; font-size: 9.5px; color: var(--rust); margin-top: 4px; transform: rotate(-1.2deg); }
+  .card .stamp { margin-top: auto; padding-top: 6px; display: flex; align-items: baseline; justify-content: space-between; border-top: 1px solid var(--rule); }
+  .card .stamp b { font-size: 17px; font-weight: 600; }
+  .card .stamp .slash { color: var(--muted); }
+  .card .stamp .hp { font-size: 17px; }
+  .card .stamp .dmg { font-family: "Segoe Script", "Bradley Hand", cursive; font-size: 9px; color: var(--rust); }
+  .card .level { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+  .hand-head { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 0 4px; }
+  .hand-head .label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+  .hand { display: flex; gap: 8px; align-items: flex-end; padding: 6px 4px 12px; }
+  .hand .card { width: 156px; min-height: 184px; transform-origin: bottom center; }
+  .hand .card:nth-child(1) { transform: rotate(-1.8deg) translateY(3px); }
+  .hand .card:nth-child(2) { transform: rotate(-0.8deg); }
+  .hand .card:nth-child(3) { transform: rotate(0.2deg) translateY(-4px); }
+  .hand .card:nth-child(4) { transform: rotate(1.2deg); }
+  .hand .card:nth-child(5) { transform: rotate(2.1deg) translateY(3px); }
+  .hand .card:hover { transform: translateY(-6px) rotate(0deg); }
+  .margin { border-left: 1px solid var(--rule); padding-left: 20px; }
+  .margin h3 { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; font-weight: 500; }
+  .margin .note-block { border-bottom: 1px solid var(--rule); padding-bottom: 12px; margin-bottom: 12px; }
+  .margin .hand-note { font-family: "Segoe Script", "Bradley Hand", cursive; font-size: 13px; line-height: 1.5; color: var(--indigo); transform: rotate(-0.6deg); }
+  .margin .log { font-size: 12px; font-style: italic; color: var(--muted); }
+  .margin .log p { margin: 0 0 7px; padding-bottom: 7px; border-bottom: 1px dotted var(--rule); }
+  .margin .legend { font-size: 11px; color: var(--muted); line-height: 1.7; }
+  .margin .legend b { color: var(--ink); font-weight: 600; }
+  .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+  footer { border-top: 1px solid var(--rule); margin-top: 12px; padding-top: 9px; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+  kbd { border: 1px solid var(--rule); border-bottom-width: 2px; padding: 0 4px; font-family: ui-monospace, Consolas, monospace; font-size: 10px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <div class="wordmark">Academy<em>.</em></div>
+      <div class="sub">A game of arguments</div>
+    </div>
+    <div class="meta"><span>Round <b>7</b></span><span class="dot"></span><span><b>Your turn</b></span><span class="dot"></span><span>Attack token yours</span></div>
+  </header>
+
+  <div class="layout">
+    <div class="main">
+      <div class="strip">
+        <div class="who"><span class="role">Opponent</span><h2>Jacques Lacan</h2></div>
+        <div class="nexus">11<small>nexus</small></div>
+        <div class="tally" aria-label="5 energy"><i></i><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+        <div class="meta" style="text-transform:none;letter-spacing:0"><span>Hand 4 · Deck 24</span></div>
+      </div>
+      <div class="back"><span class="tag">School</span>Psychoanalysis<span class="sub" style="margin-left:auto;letter-spacing:0.1em">second Argument costs 1 less</span></div>
+
+      <div class="row">
+        <div class="slot"><span class="no">01</span>
+          <article class="card champion" tabindex="0" aria-label="Karl Marx, champion, level 2, cost 3, attack 4, health 4 of 5">
+            <span class="type">Champion</span><span class="level">Level II</span><span class="cost">3</span>
+            <h3 class="name">Karl Marx</h3>
+            <p class="text">Time Bombs cost 1 and deal 2 more damage.</p>
+            <p class="note">bomb clock: two ticks</p>
+            <div class="stamp"><span><b>4</b></span><span class="dmg">-1 health</span><span class="slash">/</span><span class="hp">5</span></div>
+          </article>
+        </div>
+        <div class="slot"><span class="no">02</span>
+          <article class="card opponent" tabindex="0" aria-label="The Bulwark, thinker, cost 4, attack 2, health 3 of 5, Tough">
+            <span class="type">Thinker</span><span class="cost">4</span>
+            <h3 class="name">The Bulwark</h3>
+            <p class="note">Tough, so 1 less</p>
+            <div class="stamp"><span><b>2</b></span><span class="dmg">-2 health</span><span class="slash">/</span><span class="hp">5</span></div>
+          </article>
+        </div>
+        <div class="slot"><span class="no">03</span>
+          <article class="card" tabindex="0" aria-label="The Lecturer, thinker, cost 2, attack 2, health 2">
+            <span class="type">Thinker</span><span class="cost">2</span>
+            <h3 class="name">The Lecturer</h3>
+            <div class="stamp"><span><b>2</b></span><span></span><span class="slash">/</span><span class="hp">2</span></div>
+          </article>
+        </div>
+        <div class="slot"><span class="no">04</span>
+          <article class="card opponent" tabindex="0" aria-label="Signifier, thinker, cost 2, attack 1, health 2 of 3">
+            <span class="type">Thinker</span><span class="cost">2</span>
+            <h3 class="name">Signifier</h3>
+            <p class="text">Arguments after a Thinker make me stronger.</p>
+            <p class="note">one scratch</p>
+            <div class="stamp"><span><b>1</b></span><span class="dmg">-1 health</span><span class="slash">/</span><span class="hp">3</span></div>
+          </article>
+        </div>
+        <div class="slot empty">Empty</div>
+        <div class="slot"><span class="no">06</span>
+          <article class="card opponent" tabindex="0" aria-label="The Orator, thinker, cost 4, attack 3, health 3">
+            <span class="type">Thinker</span><span class="cost">4</span>
+            <h3 class="name">The Orator</h3>
+            <p class="text">When I attack, another ally gets +1 attack.</p>
+            <div class="stamp"><span><b>3</b></span><span></span><span class="slash">/</span><span class="hp">3</span></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="back" style="border-left-color:var(--gold)"><span class="tag" style="color:var(--gold)">School</span>Historical Materialism<span class="sub" style="margin-left:auto;letter-spacing:0.1em">a death makes the next Argument cheaper</span></div>
+
+      <div class="strip">
+        <div class="who"><span class="role">You</span><h2>Karl Marx</h2></div>
+        <div class="nexus">14<small>nexus</small></div>
+        <div class="tally" aria-label="6 energy and 2 spell mana"><i></i><i></i><i></i><i></i><i></i><i></i><i class="spell"></i><i class="spell"></i><i class="off"></i><i class="off"></i></div>
+        <div class="meta" style="text-transform:none;letter-spacing:0"><span>6 energy · 2 spell · Hand 5 · Deck 21</span></div>
+      </div>
+
+      <div class="hand-head"><span class="label">Your hand</span><span class="sub">5 cards</span></div>
+      <div class="hand">
+        <article class="card argument" tabindex="0" aria-label="Dialectic, argument, cost 2">
+          <span class="type">Argument</span><span class="cost">2</span><h3 class="name">Dialectic</h3>
+          <p class="text">Deal 2 damage to a unit. If you played an Argument earlier this round, deal 2 more.</p>
+          <p class="note">after Rebuttal: 4</p>
+        </article>
+        <article class="card argument" tabindex="0" aria-label="Rebuttal, argument, cost 1">
+          <span class="type">Argument</span><span class="cost">1</span><h3 class="name">Rebuttal</h3>
+          <p class="text">Deal 1 damage to a unit.</p>
+        </article>
+        <article class="card argument" tabindex="0" aria-label="Manifesto, argument, cost 6">
+          <span class="type">Argument</span><span class="cost">6</span><h3 class="name">Manifesto</h3>
+          <p class="text">Deal 3 damage to all enemy units. Create a Time Bomb in your hand.</p>
+        </article>
+        <article class="card argument" tabindex="0" aria-label="Time Bomb, argument, cost 2">
+          <span class="type">Argument</span><span class="cost">2</span><h3 class="name">Time Bomb</h3>
+          <p class="text">At the start of your next turn, deal 4 damage to the strongest enemy unit.</p>
+          <p class="note">6 to the Bulwark at level II</p>
+        </article>
+        <article class="card" tabindex="0" aria-label="The Archivist, thinker, cost 3">
+          <span class="type">Thinker</span><span class="cost">3</span><h3 class="name">The Archivist</h3>
+          <p class="text">When I am played, draw 1.</p>
+          <div class="stamp"><span><b>2</b></span><span></span><span class="slash">/</span><span class="hp">3</span></div>
+        </article>
+      </div>
+    </div>
+
+    <aside class="margin">
+      <div class="note-block">
+        <h3>Sketch C</h3>
+        <div class="hand-note">Cream paper, editorial margins, annotated cards. Read the board like a marked-up essay.</div>
+      </div>
+      <div class="note-block">
+        <h3>Margin log</h3>
+        <div class="log">
+          <p>You played Dialectic on The Bulwark.</p>
+          <p>The Bulwark took 4 damage.</p>
+          <p>Lacan passed.</p>
+        </div>
+      </div>
+      <div class="note-block">
+        <h3>Board state</h3>
+        <div class="legend">
+          <div><span class="swatch" style="background:var(--gold)"></span><b>Marx</b> is level II, 4 of 5 health.</div>
+          <div><span class="swatch" style="background:var(--blue)"></span><b>Bulwark</b> has Tough and 2 damage.</div>
+          <div><span class="swatch" style="background:var(--rust)"></span><b>Signifier</b> has 1 damage.</div>
+          <div><span class="swatch" style="background:var(--green)"></span><b>Schools</b> sit in the back zone.</div>
+        </div>
+      </div>
+      <div class="note-block">
+        <h3>Tradeoffs</h3>
+        <div class="legend">Strong identity and voice. The asymmetry costs scan speed, and the handwritten notes need a readable fallback.</div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <span><kbd>Tab</kbd> focus · <kbd>Enter</kbd> select · <kbd>Esc</kbd> cancel</span>
+    <span>Serif, ruled margins, one accent per card type</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+The browser error trap listened for error, unhandledrejection, and console.error.
+
+After load, a human card play, a full game to the result screen, and a rematch, window.__errors was [].
+
+The full game and rematch check ran in one browser session. The human play check ran in a separate session. Both reported an empty array.

@@ -175,31 +175,33 @@ Tests alone are not sufficient verification. A milestone is verified only when i
 
 ## Build the UI and settle the visual direction (AC-06)
 
+**State.** Branch `ac-06-ui` at `be6f136`. Evidence at `docs/evidence/ac-06-01-select.png` through `ac-06-10-choose.png`, `docs/evidence/ac-06-keyboard.png`, and `docs/evidence/ac-06-walkthrough.mp4`. 90 tests. FCP 468 ms. AI render 11.3 ms. Console clean.
+
 **Entry gate.** AC-05 is merged. A bot can play a full game through the engine.
 
 **Deliverables.**
 
-- [ ] Sketch three visual directions as static HTML in `docs/sketches/`. Each sketch shows the match screen with the same board state.
-- [ ] Apply the chosen direction as design tokens in `src/ui/tokens.css`.
-- [ ] Create `src/ui/App.tsx` with the champion select, match, and result screens.
-- [ ] Create `src/ui/Board.tsx`, `Row.tsx`, `Slot.tsx`, `BackZone.tsx`, `Hand.tsx`, `Card.tsx`, `CombatOverlay.tsx`, `Log.tsx`, and `Result.tsx`.
-- [ ] Create `src/ui/useGame.ts` with `useReducer` over `applyAction` and the AI turn effect.
-- [ ] Add keyboard focus states, school labels next to color, and reduced motion handling.
+- [x] Sketch three visual directions as static HTML in `docs/sketches/`. Each sketch shows the match screen with the same board state. Files at `docs/sketches/a-reading-room.html`, `docs/sketches/b-seminar.html`, and `docs/sketches/c-marginalia.html`.
+- [x] Apply the chosen direction as design tokens in `src/ui/tokens.css`.
+- [x] Create `src/ui/App.tsx` with the champion select, match, and result screens.
+- [x] Create `src/ui/Board.tsx`, `Row.tsx`, `Slot.tsx`, `BackZone.tsx`, `Hand.tsx`, `Card.tsx`, `CombatOverlay.tsx`, `Log.tsx`, and `Result.tsx`.
+- [x] Create `src/ui/useGame.ts` with `useReducer` over `applyAction` and the AI turn effect.
+- [x] Add keyboard focus states, school labels next to color, and reduced motion handling.
 
 **Verify, unit and perf.** Tests alone are not sufficient verification. A milestone is verified only when its unit, live, and perf boxes are all checked.
 
-- [ ] `src/ui/App.test.tsx` renders a game from a fixture state and asserts the hand, the row, the health, and the energy.
-- [ ] Live. Drive a full game in the browser tool from champion select to the result screen. Save ten screenshots under `docs/evidence/ac-06-<n>-<slug>.png`.
-- [ ] Live. Complete one full turn using only the keyboard. Save `ac-06-keyboard.png`.
-- [ ] Live. The console is clean on load, on a play, on combat, and on the result screen.
-- [ ] Perf. First contentful paint under 1 s locally. An AI turn renders in under 500 ms after the action resolves. Record both numbers from the browser performance timeline.
-- [ ] Review. The three sketches are the design checkpoint.
+- [x] `src/ui/App.test.tsx` renders a game from a fixture state and asserts the hand, the row, the health, and the energy.
+- [x] Live. Drive a full game in the browser tool from champion select to the result screen. Ten screenshots at `docs/evidence/ac-06-01-select.png` through `docs/evidence/ac-06-10-choose.png`. Walkthrough at `docs/evidence/ac-06-walkthrough.mp4`.
+- [x] Live. Complete one full turn using only the keyboard. Evidence at `docs/evidence/ac-06-keyboard.png`.
+- [x] Live. The console is clean on load, on a play, on combat, and on the result screen. Evidence at `docs/evidence/ac-06-console.txt`.
+- [x] Perf. First contentful paint under 1 s locally. An AI turn renders in under 500 ms after the action resolves. FCP 468 ms. AI render 9.2 ms and 11.3 ms. Evidence at `docs/evidence/ac-06-perf.txt`.
+- [x] Review. The three sketches are the design checkpoint.
 
 **Review gate.** The operator reviews the visual direction before the UI is built, then reviews the built match screen before merge. AC-06 is review-gated.
 
-- [ ] Post the three sketches with a recommendation and the tradeoffs.
-- [ ] Wait for the pick.
-- [ ] After the build, post the match screen screenshots and a short screen recording.
+- [x] Post the three sketches with a recommendation and the tradeoffs.
+- [x] Wait for the pick. Picked A with the three fixes.
+- [x] After the build, post the match screen screenshots and a short screen recording.
 
 ## Write the documentation (AC-07)
 
