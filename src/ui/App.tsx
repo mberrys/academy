@@ -348,7 +348,7 @@ export function MatchScreen({ state, onAction, error }: MatchScreenProps) {
         onSelect={selectCard}
       />
 
-      <div className="action-bar" role="toolbar" aria-label="Actions">
+      <div className="action-bar" role="region" aria-label="Actions">
         <div className="action-status">
           <span className={`chip ${humanTurn ? 'chip-on' : ''}`}>
             {inCombat ? 'Combat' : humanTurn ? 'Your turn' : 'Opponent turn'}
