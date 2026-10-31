@@ -84,9 +84,9 @@ function describe(state: GameState, event: GameEvent): string {
 export function Log({ state }: { state: GameState }) {
   const entries = state.events.slice(-10).reverse();
   return (
-    <div className="log" aria-live="polite" aria-label="Game log">
+    <div className="log" role="log" aria-label="Game log">
       {entries.map((event, index) => (
-        <p className="log-entry" key={`${event.type}-${index}`}>{describe(state, event)}</p>
+        <p className="log-entry" key={`${event.type}-${state.events.length - 1 - index}`}>{describe(state, event)}</p>
       ))}
     </div>
   );
