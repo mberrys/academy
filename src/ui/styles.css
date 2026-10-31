@@ -434,6 +434,12 @@ p {
   outline-offset: 2px;
 }
 
+.card.is-selected:focus-visible,
+.card.is-highlight:focus-visible {
+  outline: 4px double var(--ink);
+  outline-offset: 4px;
+}
+
 .card.is-playable {
   border-color: var(--gold);
 }
